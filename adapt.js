@@ -1,5 +1,10 @@
+var Transformation = require('./transformation');
 module.exports = {
-  transform: function(object, schema) {
-    // To be implemented 
+  createTransformation: function() {
+    return new Transformation();
+  },
+
+  transform: function(object, transformation) {
+    return transformation.run(object);
   }
 }

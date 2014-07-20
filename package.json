@@ -1,6 +1,6 @@
 {
   "name": "adapt",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Adaption library",
   "author": "Manuel de la Higuera <mhiguera@gmail.com",
   "main": "adapt.js",
