@@ -23,7 +23,11 @@ Transformation.prototype.transform = function(object) {
 Transformation.prototype.run = function(object, context) {
   var head = this.getStart();
   if (context) { head.setContext(context) }
-  if (object instanceof Array) return object.map(this.run.bind(this));
+  if (object instanceof Array) {
+    var self = this;
+    var fn = function(i) { return self.run(i) }
+    return object.map(fn);
+  }
   do {
     object = head.transform(object);
     head = head.nextLink;

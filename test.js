@@ -193,14 +193,16 @@ describe('adapt', function() {
     })
 
     it('should transform a collection-property passing a context', function() {
-      var test = { 'inner': [{ 'prop': 'value' }] };
+      var test = { 'inner': [{ 'prop': 'value' }, { 'prop': 'value' }] };
       var sub = adapt.createTransformation().assignProperty('context', function(ctx) { return ctx } );
       var transformation = adapt.createTransformation().transformProperty('inner', sub);
       var transformed = adapt.transform(test, transformation, 'contextValue');
       should.exist(transformed);
       should.exist(transformed.inner);
       should.exist(transformed.inner[0].context);
+      should.exist(transformed.inner[1].context);
       transformed.inner[0].context.should.equal('contextValue');
+      transformed.inner[1].context.should.equal('contextValue');
     })
   });
 });
