@@ -4,7 +4,7 @@ module.exports = {
     return new Transformation();
   },
 
-  transform: function(object, transformation) {
-    return transformation.run(object);
+  transform: function(object, transformation, context) {
+    return transformation.run(object, context);
   }
 }

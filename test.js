@@ -2,9 +2,9 @@ var adapt = require('./adapt');
 var should = require('chai').should();
 describe('adapt', function() {
   describe('transformations', function() {
-    it('#transform should exist and have an arity of 2', function() {
+    it('#transform should exist and have an arity of 3', function() {
       should.exist(adapt.transform);
-      adapt.transform.should.have.length(2);
+      adapt.transform.should.have.length(3);
     });
 
     it('#createTransformation should exist and have an arity of 0', function() {
@@ -123,6 +123,16 @@ describe('adapt', function() {
       transformed.sum.should.equal(16);
     });
 
+    it('should pass a context through adapt', function() {
+      var test = { prop1: 'a', prop2: 'b' }
+      var transformation = adapt.createTransformation()
+        .assignProperty('concat', function(ctx) { return [this.prop1, this.prop2].join(ctx) })
+      var transformed = adapt.transform(test, transformation, '+');
+      should.exist(transformed);
+      should.exist(transformed.concat);
+      transformed.concat.should.be.equal('a+b');
+    })
+
     it('should compute a property unsetting a context', function() {
       var test = { values: [1,2,3] }
       var sum = function(ctx) {
@@ -140,15 +150,16 @@ describe('adapt', function() {
       transformed.sum.should.equal(6);
     });
 
-    it('should run a command in an array', function() {
-      var test = [];
-      var command = function() { var i=32; while (i--) this[i] = Math.pow(2,i) }
+    it('should run a command', function() {
+      var test = { list: [] };
+      var command = function() { var i=32; while (i--) this.list[i] = Math.pow(2,i) }
       var transformation = adapt.createTransformation().runCommand(command)
       var transformed = adapt.transform(test, transformation);
       should.exist(transformed);
-      transformed[0].should.equal(1);
-      transformed[16].should.equal(65536);
-      transformed.should.have.length(32);
+      should.exist(transformed.list);
+      transformed.list[0].should.equal(1);
+      transformed.list[16].should.equal(65536);
+      transformed.list.should.have.length(32);
     });
 
     it('should expand an object', function() {

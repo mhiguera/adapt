@@ -20,9 +20,10 @@ Transformation.prototype.transform = function(object) {
   return object;
 }
 
-Transformation.prototype.run = function(object) {
+Transformation.prototype.run = function(object, context) {
   var head = this.getStart();
   if (object instanceof Array) return object.map(this.run.bind(this));
+  if (context) { head.setContext(context) }
   do {
     object = head.transform(object);
     head = head.nextLink;
