@@ -107,6 +107,20 @@ describe('adapt', function() {
       transformed.sum.should.equal(6);
     });
 
+    it('should not assign a computed property if no return is found and property existed before', function() {
+      var test = { value: 1 }
+      var fn = function() {
+        if (this.value < 10) return this.value * 10;
+      }
+      var transformation = adapt.createTransformation();
+      transformation.assignProperty('value', fn);
+      transformation.assignProperty('value', fn);
+      var transformed = adapt.transform(test, transformation);
+      should.exist(transformed);
+      should.exist(transformed.value);
+      transformed.value.should.equal(10);
+    });
+
     it('should compute a property within a context', function() {
       var test = { values: [1,2,3] }
       var sum = function(ctx) {

@@ -115,7 +115,7 @@ AssignPropertyTransformation = function(propertyName, value) {
 Transformation.extend('assignProperty', AssignPropertyTransformation);
 AssignPropertyTransformation.prototype.transform = function(object) {
   var v = ('function' === typeof this.value)? this.value.call(object, this.getContext()) : this.value;
-  object[this.property] = v;
+  object[this.property] = ('undefined' !== typeof v)? v : object[this.property];
   return object;
 }
 
