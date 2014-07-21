@@ -22,8 +22,8 @@ Transformation.prototype.transform = function(object) {
 
 Transformation.prototype.run = function(object, context) {
   var head = this.getStart();
-  if (object instanceof Array) return object.map(this.run.bind(this));
   if (context) { head.setContext(context) }
+  if (object instanceof Array) return object.map(this.run.bind(this));
   do {
     object = head.transform(object);
     head = head.nextLink;
@@ -145,7 +145,7 @@ Transformation.extend('transformProperty', NestedTransformation);
 NestedTransformation.prototype.transform = function(object) {
   var self = this;
   var property = object[this.property];
-  if (property) object[this.property] = this.transformation.run(property);
+  if (property) object[this.property] = this.transformation.run(property, this.getContext());
   return object;
 }
 
