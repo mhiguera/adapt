@@ -97,7 +97,7 @@ CastPropertyTransformation.prototype.transform = function(object) {
 
 RenamePropertyTransformation = function(propertyName, newPropertyName) {
   this.property = propertyName;
-  this.newProperty = newPropertyName;
+  this.newPropertyName = newPropertyName;
 }
 
 Transformation.extend('renameProperty', RenamePropertyTransformation);
