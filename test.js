@@ -71,6 +71,15 @@ describe('adapt', function() {
       transformed.prop1.should.be.a('number');
     });
 
+    it('should rename a property once', function() {
+      var test = { prop: 'a' }
+      var transformation = adapt.createTransformation();
+      transformation.renameProperty('prop', 'property')
+      var transformed = adapt.transform(test, transformation);
+      should.exist(transformed);
+      should.exist(transformed.property)
+    });
+
     it('should rename a property three times', function() {
       var test = { prop1: '1', prop2: 'b', prop3: 'c' }
       var transformation = adapt.createTransformation();
@@ -253,6 +262,22 @@ describe('adapt', function() {
       should.exist(transformed.inner[1].context);
       transformed.inner[0].context.should.equal('contextValue');
       transformed.inner[1].context.should.equal('contextValue');
+    })
+
+    it('should branch a transformation', function() {
+      var test1 = { prop: 1 };
+      var test2 = { prop: 2 };
+      var transformation = adapt.createTransformation().expandAsProperty('expanded');
+      var branch1 = transformation.branch().renameProperty('expanded', 'someProperties');
+      var branch2 = transformation.branch().renameProperty('expanded', 'otherProperties');
+      var transformed1 = adapt.transform(test1, branch1);
+      var transformed2 = adapt.transform(test2, branch2);
+      should.exist(transformed1);
+      should.exist(transformed2);
+      should.exist(transformed1.someProperties);
+      should.exist(transformed2.otherProperties);
+      transformed1.someProperties.prop.should.equal(1);
+      transformed2.otherProperties.prop.should.equal(2);
     })
   });
 });
