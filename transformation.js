@@ -1,182 +1,130 @@
-Transformation = function(loopback) {
-  this.nextLink = null;
-  this.context = null;
+Transformation = function() {
+  this.stack = [];
 }
 
-Transformation.extend = function(methodName, fn) {
+Transformation.addMethod = function(methodName, fn) {
   Transformation.prototype[methodName] = function() {
-    var args = [].slice.call(arguments);
-    var extension = function() { return fn.apply(this, args) }
-    extension.prototype = fn.prototype;
-    var chained = this.chain(new extension);
-    chained.loopback = this;
-    return chained;
+    this.stack.push(fn.apply(this, [].slice.call(arguments)));
+    return this;
   }
-  fn.prototype = new Transformation();
-  fn.prototype.__super = Transformation.prototype;
 }
 
-Transformation.prototype.transform = function(object) {
-  return object;
+Transformation.prototype.branch = function() {
+  var branch = new Transformation();
+  branch.setLoopback(this);
+  return branch;
 }
 
-Transformation.prototype.run = function(object, context) {
-  var head = this.getStart();
-  if (context) { head.setContext(context) }
-  if (object instanceof Array) {
-    var self = this;
-    var fn = function(i) { return self.run(i) }
-    return object.map(fn);
-  }
-  do {
-    object = head.transform(object);
-    head = head.nextLink;
-  } while (head);
-  return object;
-}
-
-Transformation.prototype.getStart = function() {
-  var start = this;
-  while (start.loopback) { start = start.loopback }
-  return start;
-}
-
-Transformation.prototype.runLoopback = function(object) {
-  if (this.loopback) return this.loopback.run(object);
-  else return object;
-}
-
-Transformation.prototype.runNext = function(object) {
-  if (this.nextLink) return this.nextLink.run(object);
-  else return object;
-}
-
-Transformation.prototype.setContext = function(context) {
-  this.context = context;
-  return this;
-}
-
-Transformation.prototype.unsetContext = function() {
-  this.ommitContext = true;
-  return this;
+Transformation.prototype.setLoopback = function(loopback) {
+  this.loopback = loopback;
 }
 
 Transformation.prototype.getContext = function() {
-  if (this.ommitContext)  return null;
-  else if (this.context)  return this.context;
-  else if (this.loopback) return this.loopback.getContext();
-  else return null;
+  return this.context;
 }
 
-Transformation.prototype.chain = function(transformation) {
-  if (this.nextLink) this.nextLink.chain(transformation);
-  else this.nextLink = transformation;
-  return this.nextLink;
-}
-
-RemovePropertyTransformation = function(propertyName) {
-  this.property = propertyName;
-}
-
-Transformation.extend('removeProperty', RemovePropertyTransformation);
-RemovePropertyTransformation.prototype.transform = function(object) {
-  delete object[this.property];
+Transformation.prototype.run = function(object, context) {
+  if (this.loopback) object = this.loopback.run(object, context);
+  if (context) this.context = context;
+  this.stack.forEach(function(transform) {
+    object = transform(object);
+  });
   return object;
 }
 
-CastPropertyTransformation = function(propertyName, castType) {
-  this.property = propertyName;
-  this.castType = castType;
-}
-
-Transformation.extend('castProperty', CastPropertyTransformation);
-CastPropertyTransformation.prototype.transform = function(object) {
-  object[this.property] = this.castType(object[this.property]);
-  return object;
-}
-
-RenamePropertyTransformation = function(propertyName, newPropertyName) {
-  this.property = propertyName;
-  this.newPropertyName = newPropertyName;
-}
-
-Transformation.extend('renameProperty', RenamePropertyTransformation);
-RenamePropertyTransformation.prototype.transform = function(object) {
-  object[this.newPropertyName] = object[this.property];
-  delete object[this.property];
-  return object;
-}
-
-AssignPropertyTransformation = function(propertyName, value) {
-  this.property = propertyName;
-  this.value    = value;
-}
-
-Transformation.extend('assignProperty', AssignPropertyTransformation);
-AssignPropertyTransformation.prototype.transform = function(object) {
-  var v = ('function' === typeof this.value)? this.value.call(object, this.getContext()) : this.value;
-  object[this.property] = ('undefined' !== typeof v)? v : object[this.property];
-  return object;
-}
-
-AssignPropertiesTransformation = function(info, value) {
-  this.info = info;
-}
-
-Transformation.extend('assignProperties', AssignPropertiesTransformation);
-AssignPropertiesTransformation.prototype.transform = function(object) {
-  for (var propertyName in this.info) {
-    var value = this.info[propertyName];
-    var v = ('function' === typeof value)? value.call(object, this.getContext()) : value;
-    object[propertyName] = ('undefined' !== typeof v)? v : object[propertyName];
-  }
-  return object;
-}
-
-ClonePropertyTransformation = function(propertyName, targetName) {
-  this.propertyName = propertyName;
-  this.targetName   = targetName;
-}
-
-Transformation.extend('cloneProperty', ClonePropertyTransformation);
-ClonePropertyTransformation.prototype.transform = function(object) {
-  if (!object[this.propertyName]) return object;
-  object[this.targetName] = JSON.parse(JSON.stringify(object[this.propertyName]));
-  return object;
-}
-
-CommandTransformation = function(command) {
-  this.command  = command;
-}
-
-Transformation.extend('runCommand', CommandTransformation);
-CommandTransformation.prototype.transform = function(object) {
-  this.command.call(object);
-  return object;
-}
-
-ExpandAsPropertyTransformation = function(property) {
-  this.property  = property;
-}
-
-Transformation.extend('expandAsProperty', ExpandAsPropertyTransformation);
-ExpandAsPropertyTransformation.prototype.transform = function(object) {
-  var o = {};
-  o[this.property] = object;
-  return o;
-}
-
-NestedTransformation = function(propertyName, transformation) {
-  this.property = propertyName;
-  this.transformation = transformation;
-}
-
-Transformation.extend('transformProperty', NestedTransformation);
-NestedTransformation.prototype.transform = function(object) {
+Transformation.addMethod('setContext', function(context) {
   var self = this;
-  var property = object[this.property];
-  if (property) object[this.property] = this.transformation.run(property, this.getContext());
-  return object;
-}
+  return function(object) {
+    self.context = context;
+    return object;
+  }
+})
+
+Transformation.addMethod('unsetContext', function(context) {
+  var self = this;
+  return function(object) {
+    self.context = null;
+    return object;
+  }
+})
+
+Transformation.addMethod('removeProperty', function(propName) {
+  return function(object) {
+    delete object[propName];
+    return object;
+  }
+})
+
+Transformation.addMethod('castProperty', function(propName, cast) {
+  return function(object) {
+    object[propName] = cast(object[propName]);
+    return object;
+  }
+})
+
+Transformation.addMethod('renameProperty', function(oldPropName, newPropName) {
+  return function(object) {
+    object[newPropName] = object[oldPropName];
+    delete object[oldPropName];
+    return object;
+  }
+})
+
+Transformation.addMethod('assignProperty', function(propName, value) {
+  var self = this;
+  return function(object) {
+    var v = ('function' === typeof value)? value.call(object, self.getContext()) : value;
+    object[propName] = ('undefined' !== typeof v)? v : object[propName];
+    return object;
+  }
+})
+
+Transformation.addMethod('assignProperties', function(properties) {
+  var self = this;
+  return function(object) {
+    for (var propName in properties) {
+      var value = properties[propName];
+      var v = ('function' === typeof value)? value.call(object, self.getContext()) : value;
+      object[propName] = ('undefined' !== typeof v)? v : object[propName];
+    }
+    return object;
+  }
+})
+
+Transformation.addMethod('cloneProperty', function(propName, targetName) {
+  return function(object) {
+    if (!object[propName]) return object;
+    object[targetName] = JSON.parse(JSON.stringify(object[propName]));
+    return object;
+  }
+})
+
+Transformation.addMethod('runCommand', function(command) {
+  return function(object) {
+    command.call(object);
+    return object;
+  }
+})
+
+Transformation.addMethod('expandAsProperty', function(propName) {
+  return function(object) {
+    var o = {};
+    o[propName] = object;
+    return o;
+  }
+})
+
+Transformation.addMethod('transformProperty', function(propName, transformation) {
+  var self = this;
+  var transformProperty = function(property) {
+    return transformation.run(property, self.getContext());
+  }
+  return function(object) {
+    if (!object[propName]) return object;
+    else if (object[propName] instanceof Array) object[propName].map(transformProperty);
+    else object[propName] = transformProperty(object[propName]);
+    return object;
+  }
+});
 
 module.exports = Transformation;
