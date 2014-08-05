@@ -119,6 +119,32 @@ AssignPropertyTransformation.prototype.transform = function(object) {
   return object;
 }
 
+AssignPropertiesTransformation = function(info, value) {
+  this.info = info;
+}
+
+Transformation.extend('assignProperties', AssignPropertiesTransformation);
+AssignPropertiesTransformation.prototype.transform = function(object) {
+  for (var propertyName in this.info) {
+    var value = this.info[propertyName];
+    var v = ('function' === typeof value)? value.call(object, this.getContext()) : value;
+    object[propertyName] = ('undefined' !== typeof v)? v : object[propertyName];
+  }
+  return object;
+}
+
+ClonePropertyTransformation = function(propertyName, targetName) {
+  this.propertyName = propertyName;
+  this.targetName   = targetName;
+}
+
+Transformation.extend('cloneProperty', ClonePropertyTransformation);
+ClonePropertyTransformation.prototype.transform = function(object) {
+  if (!object[this.propertyName]) return object;
+  object[this.targetName] = JSON.parse(JSON.stringify(object[this.propertyName]));
+  return object;
+}
+
 CommandTransformation = function(command) {
   this.command  = command;
 }

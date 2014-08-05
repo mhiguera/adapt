@@ -93,6 +93,42 @@ describe('adapt', function() {
       transformed.sum.should.equal(6);
     });
 
+    it('should assign some properties', function() {
+      var test = { prop1: 1, prop2: 2, prop3: 3 }
+      var transformation = adapt.createTransformation();
+      transformation.assignProperties({
+        sum: 6,
+        count: 3
+      });
+      var transformed = adapt.transform(test, transformation);
+      should.exist(transformed);
+      should.exist(transformed.sum);
+      should.exist(transformed.count);
+      transformed.sum.should.equal(6);
+    });
+
+    it('should clone a property (primitive)', function() {
+      var test = { prop1: 1 }
+      var transformation = adapt.createTransformation();
+      transformation.cloneProperty('prop1', 'prop2');
+      var transformed = adapt.transform(test, transformation);
+      should.exist(transformed);
+      should.exist(transformed.prop2);
+      transformed.prop2.should.equal(1);
+    });
+    
+    it('should clone a property (non-primitive)', function() {
+      var test = { prop1: [1,2,3] }
+      var transformation = adapt.createTransformation();
+      transformation.cloneProperty('prop1', 'prop2');
+      var transformed = adapt.transform(test, transformation);
+      should.exist(transformed);
+      should.exist(transformed.prop2);
+      transformed.prop2[0].should.equal(1);
+      transformed.prop2[1].should.equal(2);
+      transformed.prop2[2].should.equal(3);
+    });
+
     it('should compute a property', function() {
       var test = { prop1: 1, prop2: 2, prop3: 3 }
       var transformation = adapt.createTransformation();
