@@ -55,6 +55,15 @@ Transformation.addMethod('removeProperty', function(propName) {
   }
 })
 
+Transformation.addMethod('filterProperties', function(arr) {
+  return function(object) {
+    for (var prop in object) {
+      if (!~arr.indexOf(prop)) delete object[prop];
+    }
+    return object;
+  }
+})
+
 Transformation.addMethod('castProperty', function(propName, cast) {
   return function(object) {
     object[propName] = cast(object[propName]);
