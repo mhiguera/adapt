@@ -24,6 +24,12 @@ Transformation.prototype.getContext = function() {
 }
 
 Transformation.prototype.run = function(object, context) {
+  if (object instanceof Array) {
+    var self = this;
+    object.map(function(o) {
+      return self.run(o, context);
+    });
+  }
   if (this.loopback) object = this.loopback.run(object, context);
   if (context) this.context = context;
   this.stack.forEach(function(transform) {
@@ -135,5 +141,14 @@ Transformation.addMethod('transformProperty', function(propName, transformation)
     return object;
   }
 });
+
+Transformation.addMethod('recursiveTransform', function(propName) {
+  var self = this;
+  return function(object) {
+    if (!object[propName]) return object;
+    else object[propName] = self.run(object[propName], self.getContext());
+    return object;
+  }
+})
 
 module.exports = Transformation;

@@ -38,6 +38,22 @@ describe('adapt', function() {
       should.exist(transformed.prop3);
     });
 
+
+    it('should remove a property (from a collection)', function() {
+      var t = { prop1: '1', prop2: 'b', prop3: 'c' }
+      var test = [t,t,t];
+      var transformation = adapt.createTransformation();
+      transformation.removeProperty('prop1');
+      var transformed = adapt.transform(test, transformation);
+      should.exist(transformed);
+      should.not.exist(transformed[0].prop1);
+      should.exist(transformed[0].prop2);
+      should.exist(transformed[0].prop3);
+      should.not.exist(transformed[1].prop1);
+      should.exist(transformed[1].prop2);
+      should.exist(transformed[1].prop3);
+    });
+
     it('should remove two properties when asked to', function() {
       var test = { prop1: '1', prop2: 'b', prop3: 'c' }
       var transformation = adapt.createTransformation();
@@ -278,6 +294,18 @@ describe('adapt', function() {
       should.exist(transformed2.otherProperties);
       transformed1.someProperties.prop.should.equal(1);
       transformed2.otherProperties.prop.should.equal(2);
+    })
+
+    it('should recursively run a transformation', function() {
+      var test = { prop: 1, child: { prop: 2, child: { prop: 3 }}}
+      var transformation = adapt.createTransformation()
+        .assignProperty('test', 'test')
+        .recursiveTransform('child')
+      var transformed = adapt.transform(test, transformation);
+      should.exist(transformed);
+      should.exist(transformed.test);
+      should.exist(transformed.child.test);
+      should.exist(transformed.child.child.test);
     })
   });
 });
