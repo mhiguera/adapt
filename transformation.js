@@ -1,4 +1,4 @@
-Transformation = function() {
+var Transformation = function() {
   this.stack = [];
 }
 
