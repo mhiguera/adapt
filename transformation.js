@@ -145,7 +145,11 @@ Transformation.addMethod('transformProperty', function(propName, transformation)
 Transformation.addMethod('recursiveTransform', function(propName) {
   var self = this;
   return function(object) {
-    if (!object[propName]) return object;
+    if ('undefined' !== typeof object[propName] && 'undefined' !== typeof object[propName].length) {
+      for (var i in object[propName]){
+        self.run(object[propName][i], self.getContext());
+      }
+    }else if (!object[propName]) return object;
     else object[propName] = self.run(object[propName], self.getContext());
     return object;
   }
