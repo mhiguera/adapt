@@ -146,7 +146,7 @@ Transformation.addMethod('recursiveTransform', function(propName) {
   var self = this;
   return function(object) {
     if ('undefined' !== typeof object[propName] && 'undefined' !== typeof object[propName].length) {
-      for (var i in object[propName]){
+      for (var i=0; i<object[propName].length; i++){
         self.run(object[propName][i], self.getContext());
       }
     }else if (!object[propName]) return object;
