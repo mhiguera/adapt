@@ -115,8 +115,9 @@ Transformation.addMethod('cloneProperty', function(propName, targetName) {
 })
 
 Transformation.addMethod('runCommand', function(command) {
+  var self = this;
   return function(object) {
-    command.call(object);
+    command.call(object, self.getContext());
     return object;
   }
 })
@@ -129,10 +130,11 @@ Transformation.addMethod('expandAsProperty', function(propName) {
   }
 })
 
-Transformation.addMethod('transformProperty', function(propName, transformation) {
+Transformation.addMethod('transformProperty', function(propName, transformation, newContext) {
   var self = this;
   var transformProperty = function(property) {
-    return transformation.run(property, self.getContext());
+    context = (newContext)? newContext : self.getContext();
+    return transformation.run(property, context);
   }
   return function(object) {
     if (!object[propName]) return object;
