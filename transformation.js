@@ -26,16 +26,15 @@ Transformation.prototype.getContext = function() {
 Transformation.prototype.run = function(object, context) {
   if (object instanceof Array) {
     var self = this;
-    object.map(function(o) {
-      return self.run(o, context);
+    object.map(function(o) { return self.run(o, context) });
+  }else{
+    if (this.loopback) object = this.loopback.run(object, context);
+    if (context) this.context = context;
+    this.stack.forEach(function(transform) {
+      object = transform(object);
     });
+    return object;
   }
-  if (this.loopback) object = this.loopback.run(object, context);
-  if (context) this.context = context;
-  this.stack.forEach(function(transform) {
-    object = transform(object);
-  });
-  return object;
 }
 
 Transformation.addMethod('setContext', function(context) {
