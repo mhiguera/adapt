@@ -307,5 +307,16 @@ describe('adapt', function() {
       should.exist(transformed.child.test);
       should.exist(transformed.child.child.test);
     })
+
+    it('should group properties in another property', function() {
+      var test = { prop1: 'a', prop2: 'b', prop3: 'c' }
+      var transformation = adapt.createTransformation()
+        .groupProperties(['prop1', 'prop2', 'prop3'], 'group');
+      var transformed = adapt.transform(test, transformation);
+      should.exist(transformed);
+      should.exist(transformed.group);
+      should.not.exist(transformed.prop1);
+      should.exist(transformed.group.prop1);
+    })
   });
 });

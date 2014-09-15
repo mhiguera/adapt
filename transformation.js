@@ -88,7 +88,7 @@ Transformation.addMethod('assignProperty', function(propName, value) {
   var self = this;
   return function(object) {
     var v = ('function' === typeof value)? value.call(object, self.getContext()) : value;
-    object[propName] = ('undefined' !== typeof v && v !== null)? v : object[propName];
+    object[propName] = ('undefined' !== typeof v)? v : object[propName];
     return object;
   }
 })
@@ -99,7 +99,7 @@ Transformation.addMethod('assignProperties', function(properties) {
     for (var propName in properties) {
       var value = properties[propName];
       var v = ('function' === typeof value)? value.call(object, self.getContext()) : value;
-      object[propName] = ('undefined' !== typeof v && v !== null)? v : object[propName];
+      object[propName] = ('undefined' !== typeof v)? v : object[propName];
     }
     return object;
   }
@@ -148,6 +148,17 @@ Transformation.addMethod('recursiveTransform', function(propName) {
   return function(object) {
     if (!object[propName]) return object;
     else object[propName] = self.run(object[propName], self.getContext());
+    return object;
+  }
+})
+
+Transformation.addMethod('groupProperties', function(properties, propName) {
+  return function(object) {
+    object[propName] = {};
+    properties.forEach(function(fromName) {
+      object[propName][fromName] = object[fromName];
+      delete object[fromName];
+    })
     return object;
   }
 })
