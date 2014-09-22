@@ -332,11 +332,22 @@ describe('adapt', function() {
     it('should assign a tapped variable', function() {
       var test = { depth1: [{ depth2: { depth3: [0,1,2,3,4] }}]};
       var transformation = adapt.createTransformation()
-      transformation.setProperty('value', adapt.tap.value('depth1[0].depth2.depth3[2]'));
+      transformation.setProperty('value', adapt.tap.get('depth1[0].depth2.depth3[2]'));
       var transformed = adapt.transform(test, transformation);
       should.exist(transformed);
       should.exist(transformed.value);
       transformed.value.should.be.equal(2);
     })
+
+    it('should assign a tapped variable name', function() {
+      var test = { depth1: [{ depth2: { depth3: [0,1,2,3,4] }}]};
+      var transformation = adapt.createTransformation()
+      transformation.runCommand(adapt.tap.set('depth1[0].depth2.depth3[2]', 'test'));
+      var transformed = adapt.transform(test, transformation);
+      should.exist(transformed);
+      should.exist(transformed.depth1[0].depth2.depth3[2]);
+      transformed.depth1[0].depth2.depth3[2].should.be.equal('test');
+    })
+
   });
 });

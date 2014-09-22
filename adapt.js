@@ -1,12 +1,21 @@
 var Transformation = require('./transformation');
 module.exports = {
   tap: {
-    value: function(propName) {
+    get: function(propName) {
       return function() {
         var evil = !propName.match(/(^[a-zA-Z\-\_\.\[\]\'\"\d]*$)/);
         return (evil)? undefined : eval('this.' + propName);
       }
     },
+
+    set: function(propName, value) {
+      var fn = function() { return value }
+      return function() {
+        var evil = !propName.match(/(^[a-zA-Z\-\_\.\[\]\'\"\d]*$)/);
+        if (!evil) eval('this.' + propName + '= fn()');
+      }
+    },
+
 
     equals: function(prop1, prop2) {
       return function () {
