@@ -2,6 +2,10 @@ var Transformation = function() {
   this.stack = [];
 }
 
+Transformation.aliasMethod = function(methodName, aliasedMethod) {
+  Transformation.prototype[methodName] = Transformation.prototype[aliasedMethod];
+}
+
 Transformation.addMethod = function(methodName, fn) {
   Transformation.prototype[methodName] = function() {
     this.stack.push(fn.apply(this, [].slice.call(arguments)));
@@ -84,7 +88,7 @@ Transformation.addMethod('renameProperty', function(oldPropName, newPropName) {
   }
 })
 
-Transformation.addMethod('assignProperty', function(propName, value) {
+Transformation.addMethod('setProperty', function(propName, value) {
   var self = this;
   return function(object) {
     var v = ('function' === typeof value)? value.call(object, self.getContext()) : value;
@@ -93,7 +97,7 @@ Transformation.addMethod('assignProperty', function(propName, value) {
   }
 })
 
-Transformation.addMethod('assignProperties', function(properties) {
+Transformation.addMethod('setProperties', function(properties) {
   var self = this;
   return function(object) {
     for (var propName in properties) {
@@ -163,4 +167,6 @@ Transformation.addMethod('groupProperties', function(properties, propName) {
   }
 })
 
+Transformation.aliasMethod('assignProperty',   'setProperty');
+Transformation.aliasMethod('assignProperties', 'setProperties');
 module.exports = Transformation;

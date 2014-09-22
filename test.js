@@ -318,5 +318,25 @@ describe('adapt', function() {
       should.not.exist(transformed.prop1);
       should.exist(transformed.group.prop1);
     })
+
+    it('should numberize a property when asked to', function() {
+      var test = { p: '123' }
+      var transformation = adapt.createTransformation()
+        .setProperty('pnum', adapt.tap.numberize('p'));
+      var transformed = adapt.transform(test, transformation);
+      should.exist(transformed);
+      should.exist(transformed.pnum);
+      transformed.pnum.should.equal(123);
+    })
+
+    it('should assign a tapped variable', function() {
+      var test = { depth1: [{ depth2: { depth3: [0,1,2,3,4] }}]};
+      var transformation = adapt.createTransformation()
+      transformation.setProperty('value', adapt.tap.value('depth1[0].depth2.depth3[2]'));
+      var transformed = adapt.transform(test, transformation);
+      should.exist(transformed);
+      should.exist(transformed.value);
+      transformed.value.should.be.equal(2);
+    })
   });
 });
