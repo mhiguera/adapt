@@ -57,7 +57,7 @@ module.exports = {
 
   transform: function(object, transformation, context) {
     return transformation.run(object, context);
-  }
+  },
 
   clone: function(object) {
     return JSON.parse(JSON.stringify(object));
