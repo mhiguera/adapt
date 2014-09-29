@@ -2,7 +2,7 @@ Example
 =======
 
 ```
-var adapt = require('./adapt.js');
+var adapt = require('adapt');
 var data = {
   father:   'John Doe',
   mother:   'Jane Doe',
@@ -19,7 +19,7 @@ var fullName = adapt.createTransformation()
   });
 
 var family = adapt.createTransformation()
-  .transformProperty('children', fullName)
+  .transformCollection('children', fullName)
   .transformProperty('father', fullName)
   .transformProperty('mother', fullName)
   .assignProperty('children_count', function() {

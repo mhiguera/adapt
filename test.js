@@ -44,7 +44,7 @@ describe('adapt', function() {
       var test = [t,t,t];
       var transformation = adapt.createTransformation();
       transformation.removeProperty('prop1');
-      var transformed = adapt.transform(test, transformation);
+      var transformed = adapt.transformCollection(test, transformation);
       should.exist(transformed);
       should.not.exist(transformed[0].prop1);
       should.exist(transformed[0].prop2);
@@ -270,7 +270,7 @@ describe('adapt', function() {
     it('should transform a collection-property passing a context', function() {
       var test = { 'inner': [{ 'prop': 'value' }, { 'prop': 'value' }] };
       var sub = adapt.createTransformation().assignProperty('context', function(ctx) { return ctx } );
-      var transformation = adapt.createTransformation().transformProperty('inner', sub);
+      var transformation = adapt.createTransformation().transformCollection('inner', sub);
       var transformed = adapt.transform(test, transformation, 'contextValue');
       should.exist(transformed);
       should.exist(transformed.inner);

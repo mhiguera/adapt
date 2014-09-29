@@ -12,7 +12,11 @@ module.exports = {
       var fn = function() { return value }
       return function() {
         var evil = !propName.match(/(^[a-zA-Z\-\_\.\[\]\'\"\d]*$)/);
-        if (!evil) eval('this.' + propName + '= fn()');
+        if (!evil) {
+          try {
+            eval('this.' + propName + '= fn()');
+          } catch(err) {}
+        }
       }
     },
 
@@ -57,6 +61,10 @@ module.exports = {
 
   transform: function(object, transformation, context) {
     return transformation.run(object, context);
+  },
+
+  transformCollection: function(object, transformation, context) {
+    return transformation.runCollection(object, context);
   },
 
   clone: function(object) {

@@ -27,18 +27,18 @@ Transformation.prototype.getContext = function() {
   return this.context;
 }
 
+Transformation.prototype.runCollection  = function(object, context) {
+  var self = this;
+  return object.map(function(o) { return self.run(o, context) });
+}
+
 Transformation.prototype.run = function(object, context) {
-  if (object instanceof Array) {
-    var self = this;
-    return object.map(function(o) { return self.run(o, context) });
-  }else{
-    if (this.loopback) object = this.loopback.run(object, context);
-    if (context) this.context = context;
-    this.stack.forEach(function(transform) {
-      object = transform(object);
-    });
-    return object;
-  }
+  if (this.loopback) object = this.loopback.run(object, context);
+  if (context) this.context = context;
+  this.stack.forEach(function(transform) {
+    object = transform(object);
+  });
+  return object;
 }
 
 Transformation.addMethod('setContext', function(context) {
@@ -141,11 +141,24 @@ Transformation.addMethod('transformProperty', function(propName, transformation,
   }
   return function(object) {
     if (!object[propName]) return object;
-    else if (object[propName] instanceof Array) object[propName].map(transformProperty);
     else object[propName] = transformProperty(object[propName]);
     return object;
   }
 });
+
+Transformation.addMethod('transformCollection', function(propName, transformation, newContext) {
+  var self = this;
+  var transformProperty = function(property) {
+    context = (newContext)? newContext : self.getContext();
+    return transformation.runCollection(property, context);
+  }
+  return function(object) {
+    if (!object[propName]) return object;
+    else object[propName] = transformProperty(object[propName]);
+    return object;
+  }
+});
+
 
 Transformation.addMethod('recursiveTransform', function(propName) {
   var self = this;
