@@ -32,7 +32,12 @@ Transformation.prototype.runCollection  = function(object, context) {
   return object.map(function(o) { return self.run(o, context) });
 }
 
-Transformation.prototype.run = function(object, context) {
+Transformation.prototype.run = function(source, context) {
+  var object = {};
+
+  if ('object' === typeof source) for (var i in source) object[i] = source[i];
+  else object = source;
+
   if (this.loopback) object = this.loopback.run(object, context);
   if (context) this.context = context;
   this.stack.forEach(function(transform) {

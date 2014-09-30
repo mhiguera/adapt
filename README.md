@@ -1,5 +1,5 @@
-Example
-=======
+Learning by example
+===================
 
 ```
 var adapt = require('adapt');
@@ -46,3 +46,32 @@ Output:
   children_count: 2 }
 
 ```
+
+Changelog
+=========
+* 0.2.0 
+  *	Transformations no longer destructive
+  * Added new tests
+
+* 0.1.7 
+  *	Added transformCollection (removed Array transformation "magic")
+  * Minor bugfixes
+
+* 0.1.5 - 0.1.6
+  * Bugfixes
+
+* 0.1.4
+  * Added clone method
+
+* 0.1.3
+  * Removed adapt.tap.value in favour of adapt.tap.get and adapt.tap.set
+
+* 0.1.2
+  * New tap utils: value, equals, notEquals, existance, lengthOf and numberize
+  * assignProperty and assignProperties deprecated in favour of setProperty and setProperties
+
+* 0.1.1
+  * New groupProperties functionality for transformations
+
+* 0.1.0
+  * Bugfixes

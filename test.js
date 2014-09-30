@@ -19,14 +19,6 @@ describe('adapt', function() {
       should.exist(transformed);
     });
 
-    it('should return the original object if no transformation is done', function() {
-      var test = { prop1: '1', prop2: 'b', prop3: 'c' }
-      var transformation = adapt.createTransformation();
-      var transformed = adapt.transform(test, transformation);
-      should.exist(transformed);
-      transformed.should.equal(test);
-    });
-
     it('should remove a property when asked to', function() {
       var test = { prop1: '1', prop2: 'b', prop3: 'c' }
       var transformation = adapt.createTransformation();
@@ -105,7 +97,9 @@ describe('adapt', function() {
         .renameProperty('alpha', 'prop1');
       var transformed = adapt.transform(test, transformation);
       should.exist(transformed);
-      transformed.should.equal(test);
+      transformed.prop1.should.equal(test.prop1);
+      transformed.prop2.should.equal(test.prop2);
+      transformed.prop3.should.equal(test.prop3);
     });
 
     it('should assign a property', function() {
@@ -341,7 +335,7 @@ describe('adapt', function() {
 
     it('should assign a tapped variable name', function() {
       var test = { depth1: [{ depth2: { depth3: [0,1,2,3,4] }}]};
-      var transformation = adapt.createTransformation()
+      var transformation = adapt.createTransformation();
       transformation.runCommand(adapt.tap.set('depth1[0].depth2.depth3[2]', 'test'));
       var transformed = adapt.transform(test, transformation);
       should.exist(transformed);
@@ -349,5 +343,19 @@ describe('adapt', function() {
       transformed.depth1[0].depth2.depth3[2].should.be.equal('test');
     })
 
+    it('should transform independently', function() {
+      var test1 = { propName: 'propValue' }
+      var test2 = test1;
+      var transformation = adapt.createTransformation();
+      transformation.expandAsProperty('expanded');
+      var transformed1 = adapt.transform(test1, transformation);
+      should.exist(transformed1);
+      should.exist(transformed1.expanded);
+      should.not.exist(transformed1.expanded.expanded);
+      var transformed2 = adapt.transform(test2, transformation);
+      should.exist(transformed1);
+      should.exist(transformed1.expanded);
+      should.not.exist(transformed1.expanded.expanded);
+    })
   });
 });
