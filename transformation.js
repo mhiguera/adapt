@@ -169,6 +169,16 @@ Transformation.addMethod('recursiveTransform', function(propName) {
   }
 })
 
+
+Transformation.addMethod('recursiveTransformCollection', function(propName) {
+  var self = this;
+  return function(object) {
+    if (!object[propName]) return object;
+    else object[propName] = self.runCollection(object[propName], self.getContext());
+    return object;
+  }
+})
+
 Transformation.addMethod('groupProperties', function(properties, propName) {
   return function(object) {
     object[propName] = {};
