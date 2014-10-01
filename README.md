@@ -49,9 +49,13 @@ Output:
 
 Changelog
 =========
+* 0.2.1
+  * Added extractFromProperty
+
 * 0.2.0 
   *	Transformations no longer destructive
   * Added new tests
+  * Added concat
 
 * 0.1.7 
   *	Added transformCollection (removed Array transformation "magic")

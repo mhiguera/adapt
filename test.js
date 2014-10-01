@@ -240,6 +240,14 @@ describe('adapt', function() {
       transformed.text.should.equal('test');
     });
 
+    it('should extract an object from property', function() {
+      var test = { 'text': 'test' }
+      var transformation = adapt.createTransformation().extractFromProperty('text')
+      var transformed = adapt.transform(test, transformation);
+      should.exist(transformed);
+      transformed.should.equal('test');
+    });
+
     it('should transform a property', function() {
       var test = { 'prop': 'value'}
       var sub = adapt.createTransformation().expandAsProperty('inner');

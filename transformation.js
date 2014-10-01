@@ -130,6 +130,12 @@ Transformation.addMethod('runCommand', function(command) {
   }
 })
 
+Transformation.addMethod('extractFromProperty', function(propName) {
+  return function(object) {
+    return object[propName];
+  }
+})
+
 Transformation.addMethod('expandAsProperty', function(propName) {
   return function(object) {
     var o = {};
@@ -164,7 +170,6 @@ Transformation.addMethod('transformCollection', function(propName, transformatio
   }
 });
 
-
 Transformation.addMethod('recursiveTransform', function(propName) {
   var self = this;
   return function(object) {
@@ -173,7 +178,6 @@ Transformation.addMethod('recursiveTransform', function(propName) {
     return object;
   }
 })
-
 
 Transformation.addMethod('recursiveTransformCollection', function(propName) {
   var self = this;
@@ -192,6 +196,12 @@ Transformation.addMethod('groupProperties', function(properties, propName) {
       delete object[fromName];
     })
     return object;
+  }
+})
+
+Transformation.addMethod('concat', function(transformation) {
+  return function(object) {
+    return transformation.run(object);
   }
 })
 
