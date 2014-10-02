@@ -199,9 +199,10 @@ Transformation.addMethod('groupProperties', function(properties, propName) {
   }
 })
 
-Transformation.addMethod('concat', function(transformation) {
+Transformation.addMethod('concat', function(transformation, context) {
+  var self = this;
   return function(object) {
-    return transformation.run(object);
+    return transformation.run(object, context || self.getContext());
   }
 })
 

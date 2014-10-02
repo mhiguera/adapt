@@ -49,6 +49,9 @@ Output:
 
 Changelog
 =========
+* 0.2.2
+  * Transformation method "concat" now accepts (or passes) a context
+
 * 0.2.1
   * Added extractFromProperty
 
