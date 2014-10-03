@@ -49,6 +49,9 @@ Output:
 
 Changelog
 =========
+* 0.2.3
+  * setProperty now accepts a transformation to be passed as value
+
 * 0.2.2
   * Transformation method "concat" now accepts (or passes) a context
 

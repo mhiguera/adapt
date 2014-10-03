@@ -96,7 +96,9 @@ Transformation.addMethod('renameProperty', function(oldPropName, newPropName) {
 Transformation.addMethod('setProperty', function(propName, value) {
   var self = this;
   return function(object) {
-    var v = ('function' === typeof value)? value.call(object, self.getContext()) : value;
+    var v = value;
+    if (value instanceof Transformation)  v = value.run(object, self.getContext());
+    else if ('function' === typeof value) v = value.call(object, self.getContext());
     object[propName] = ('undefined' !== typeof v)? v : object[propName];
     return object;
   }
@@ -107,7 +109,9 @@ Transformation.addMethod('setProperties', function(properties) {
   return function(object) {
     for (var propName in properties) {
       var value = properties[propName];
-      var v = ('function' === typeof value)? value.call(object, self.getContext()) : value;
+      var v = value;
+      if (value instanceof Transformation)  v = value.run(object, self.getContext());
+      else if ('function' === typeof value) v = value.call(object, self.getContext());
       object[propName] = ('undefined' !== typeof v)? v : object[propName];
     }
     return object;
