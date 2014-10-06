@@ -210,12 +210,12 @@ Transformation.addMethod('concat', function(transformation, context) {
   }
 })
 
-Transformation.addMethod('checkDependencies', function(properties) {
+Transformation.addMethod('checkDependencies', function(properties, message) {
   return function(object) {
     for (var i=0; i < properties.length; i++) {
       var propName = properties[i];
       if ('undefined' === typeof object[propName]) {
-        var message = require('util').format('Precondition failed: %s should exist', propName);
+        message = message || require('util').format('Precondition failed: %s should exist', propName);
         throw new Error(message);
       }
     }

@@ -373,5 +373,13 @@ describe('adapt', function() {
       fn.should.Throw(Error);
       fn.should.Throw('Precondition failed: prop2 should exist');
     })
+
+    it('should throw an exception (custom message) if properties does not exist', function() {
+      var test1 = { prop1: 'a' }
+      var transformation = adapt.createTransformation().checkDependencies(['prop1', 'prop2'], 'ouch!');
+      var fn = adapt.transform.bind(adapt, test1, transformation);
+      fn.should.Throw(Error);
+      fn.should.Throw('ouch!');
+    })
   });
 });

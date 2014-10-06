@@ -49,6 +49,9 @@ Output:
 
 Changelog
 =========
+* 0.2.5
+  * checkDependencies now accepts a custom message
+
 * 0.2.4
   * Added checkDependencies to adapt transformations
 
