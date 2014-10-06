@@ -210,6 +210,18 @@ Transformation.addMethod('concat', function(transformation, context) {
   }
 })
 
+Transformation.addMethod('checkDependencies', function(properties) {
+  return function(object) {
+    for (var i=0; i < properties.length; i++) {
+      var propName = properties[i];
+      if ('undefined' === typeof object[propName]) {
+        var message = require('util').format('Precondition failed: %s should exist', propName);
+        throw new Error(message);
+      }
+    }
+    return object;
+  }
+})
 Transformation.aliasMethod('assignProperty',   'setProperty');
 Transformation.aliasMethod('assignProperties', 'setProperties');
 module.exports = Transformation;

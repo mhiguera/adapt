@@ -49,6 +49,9 @@ Output:
 
 Changelog
 =========
+* 0.2.4
+  * Added checkDependencies to adapt transformations
+
 * 0.2.3
   * setProperty now accepts a transformation to be passed as value
 
