@@ -49,6 +49,9 @@ Output:
 
 Changelog
 =========
+* 0.2.6
+  * Added __parent (read-only, not enumerable) property for nested transformations
+
 * 0.2.5
   * checkDependencies now accepts a custom message
 

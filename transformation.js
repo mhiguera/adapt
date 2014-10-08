@@ -13,6 +13,11 @@ Transformation.addMethod = function(methodName, fn) {
   }
 }
 
+Transformation.injectParent = function(childElement, parentElement) {
+  Object.defineProperty(childElement, "__parent", { enumerable: false, writable: false });
+  childElement.__parent = parentElement;
+}
+
 Transformation.prototype.branch = function() {
   var branch = new Transformation();
   branch.setLoopback(this);
@@ -156,7 +161,9 @@ Transformation.addMethod('transformProperty', function(propName, transformation,
   }
   return function(object) {
     if (!object[propName]) return object;
-    else object[propName] = transformProperty(object[propName]);
+    var transformed = transformProperty(object[propName]);
+    Transformation.injectParent(transformed, object);
+    object[propName] = transformed;
     return object;
   }
 });
@@ -169,7 +176,9 @@ Transformation.addMethod('transformCollection', function(propName, transformatio
   }
   return function(object) {
     if (!object[propName]) return object;
-    else object[propName] = transformProperty(object[propName]);
+    var transformed = transformProperty(object[propName]);
+    Transformation.injectParent(transformed, object);
+    object[propName] = transformed;
     return object;
   }
 });
@@ -178,7 +187,9 @@ Transformation.addMethod('recursiveTransform', function(propName) {
   var self = this;
   return function(object) {
     if (!object[propName]) return object;
-    else object[propName] = self.run(object[propName], self.getContext());
+    var transformed = self.run(object[propName], self.getContext());
+    Transformation.injectParent(transformed, object);
+    object[propName] = transformed;
     return object;
   }
 })
@@ -187,7 +198,9 @@ Transformation.addMethod('recursiveTransformCollection', function(propName) {
   var self = this;
   return function(object) {
     if (!object[propName]) return object;
-    else object[propName] = self.runCollection(object[propName], self.getContext());
+    var transformed = self.runCollection(object[propName], self.getContext());
+    Transformation.injectParent(transformed, object);
+    object[propName] = transformed;
     return object;
   }
 })
