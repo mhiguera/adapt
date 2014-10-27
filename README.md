@@ -49,6 +49,9 @@ Output:
 
 Changelog
 =========
+* 0.2.7
+  * Bugfixes
+
 * 0.2.6
   * Added __parent (read-only, not enumerable) property for nested transformations
 
