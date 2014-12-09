@@ -49,6 +49,10 @@ Output:
 
 Changelog
 =========
+* 0.2.8
+  * Removed injectParent
+  * Added function type as context
+
 * 0.2.7
   * Bugfixes
 

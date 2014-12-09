@@ -13,11 +13,6 @@ Transformation.addMethod = function(methodName, fn) {
   }
 }
 
-Transformation.injectParent = function(childElement, parentElement) {
-  Object.defineProperty(childElement, "__parent", { enumerable: false, writable: false });
-  childElement.__parent = parentElement;
-}
-
 Transformation.prototype.branch = function() {
   var branch = new Transformation();
   branch.setLoopback(this);
@@ -159,14 +154,17 @@ Transformation.addMethod('expandAsProperty', function(propName) {
 
 Transformation.addMethod('transformProperty', function(propName, transformation, newContext) {
   var self = this;
-  var transformProperty = function(property) {
-    context = (newContext)? newContext : self.getContext();
+  var transformProperty = function(object, propName) {
+    var context;
+    var property = object[propName];
+    if (newContext && newContext instanceof Function) context = newContext.call(object, self.getContext())
+    else if (newContext) context = newContext;
+    else context = self.getContext();
     return transformation.run(property, context);
   }
   return function(object) {
     if (!object[propName]) return object;
-    var transformed = transformProperty(object[propName]);
-    Transformation.injectParent(transformed, object);
+    var transformed = transformProperty(object, propName);
     object[propName] = transformed;
     return object;
   }
@@ -174,14 +172,17 @@ Transformation.addMethod('transformProperty', function(propName, transformation,
 
 Transformation.addMethod('transformCollection', function(propName, transformation, newContext) {
   var self = this;
-  var transformProperty = function(property) {
-    context = (newContext)? newContext : self.getContext();
+  var transformProperty = function(object, propName) {
+    var context;
+    var property = object[propName];
+    if (newContext && newContext instanceof Function) context = newContext.call(object, self.getContext())
+    else if (newContext) context = newContext;
+    else context = self.getContext();
     return transformation.runCollection(property, context);
   }
   return function(object) {
     if (!object[propName]) return object;
-    var transformed = transformProperty(object[propName]);
-    Transformation.injectParent(transformed, object);
+    var transformed = transformProperty(object, propName);
     object[propName] = transformed;
     return object;
   }
@@ -192,7 +193,6 @@ Transformation.addMethod('recursiveTransform', function(propName) {
   return function(object) {
     if (!object[propName]) return object;
     var transformed = self.run(object[propName], self.getContext());
-    Transformation.injectParent(transformed, object);
     object[propName] = transformed;
     return object;
   }
@@ -203,7 +203,6 @@ Transformation.addMethod('recursiveTransformCollection', function(propName) {
   return function(object) {
     if (!object[propName]) return object;
     var transformed = self.runCollection(object[propName], self.getContext());
-    Transformation.injectParent(transformed, object);
     object[propName] = transformed;
     return object;
   }

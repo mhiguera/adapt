@@ -258,17 +258,6 @@ describe('adapt', function() {
       should.exist(transformed.prop.inner);
     })
 
-    it('should transform a property', function() {
-      var test = { 'prop': 'value' }
-      var sub = adapt.createTransformation().expandAsProperty('inner');
-      var transformation = adapt.createTransformation().transformProperty('prop', sub);
-      var transformed = adapt.transform(test, transformation);
-      should.exist(transformed);
-      should.exist(transformed.prop);
-      should.exist(transformed.prop.inner);
-      should.exist(transformed.prop.__parent);
-    })
-
     it('should transform a property passing a context', function() {
       var test = { 'inner': { 'prop': 'value' } };
       var sub = adapt.createTransformation().assignProperty('context', function(ctx) { return ctx } );
