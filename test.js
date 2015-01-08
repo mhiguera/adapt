@@ -381,5 +381,53 @@ describe('adapt', function() {
       fn.should.Throw(Error);
       fn.should.Throw('ouch!');
     })
+
+    it('should group collections', function() {
+      var test = {};
+      test.sub1 = [1,2,3];
+      test.sub2 = [4,5,6];
+      var transformation = adapt.createTransformation();
+      transformation.mergeCollections(['sub1', 'sub2'], 'coll');
+      var transformed = adapt.transform(test, transformation);
+      should.exist(transformed);
+      should.exist(transformed.coll);
+      should.equal(transformed.coll.length, 6);
+    })
+
+    it('should remove properties given a condition', function() {
+      var test = {};
+      test.prop = 1;
+      var transformation = adapt.createTransformation();
+      transformation.removePropertyIf('prop', 1)
+      var transformed = adapt.transform(test, transformation);
+      should.exist(transformed);
+      should.not.exist(transformed.prop);
+    })
+
+    it('should remove properties given a condition (as a function)', function() {
+      var test = {};
+      test.remove = true;
+      test.prop = 1;
+      var transformation = adapt.createTransformation();
+      transformation.removePropertyIf('prop', function() {
+        return test.remove;
+      })
+      var transformed = adapt.transform(test, transformation);
+      should.exist(transformed);
+      should.not.exist(transformed.prop);
+    })
+
+    it('should (not) remove properties given a condition (as a function)', function() {
+      var test = {};
+      test.remove = false;
+      test.prop = 1;
+      var transformation = adapt.createTransformation();
+      transformation.removePropertyIf('prop', function() {
+        return test.remove;
+      })
+      var transformed = adapt.transform(test, transformation);
+      should.exist(transformed);
+      should.exist(transformed.prop);
+    })
   });
 });

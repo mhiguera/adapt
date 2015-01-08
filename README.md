@@ -49,6 +49,11 @@ Output:
 
 Changelog
 =========
+* 0.2.9
+  * Added removePropertyIf transformation method
+  * Added mergeCollections transformation method
+  * Minor bugfixes
+
 * 0.2.8
   * Removed injectParent
   * Added function type as context

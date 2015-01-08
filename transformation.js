@@ -210,11 +210,38 @@ Transformation.addMethod('recursiveTransformCollection', function(propName) {
 
 Transformation.addMethod('groupProperties', function(properties, propName) {
   return function(object) {
-    object[propName] = {};
+    var found = false;
+    var o = {};
     properties.forEach(function(fromName) {
-      object[propName][fromName] = object[fromName];
+      if (!object[fromName]) return;
+      found = true;
+      o[fromName] = object[fromName];
       delete object[fromName];
     })
+    if (found) object[propName] = o;
+    return object;
+  }
+})
+
+Transformation.addMethod('mergeCollections', function(properties, propName) {
+  return function(object) {
+    var arr = [];
+    properties.forEach(function(fromName) {
+      if (!object[fromName]) return;
+      if (object[fromName] instanceof Array) {
+        arr = arr.concat(object[fromName]);
+        delete object[fromName];
+      }
+    })
+    if (arr.length) object[propName] = arr;
+    return object;
+  }
+})
+
+Transformation.addMethod('removePropertyIf', function(propName, value) {
+  return function(object) {
+    if (value instanceof Function && value.call(object)) delete object[propName];
+    else if (object[propName] == value) delete object[propName];
     return object;
   }
 })
