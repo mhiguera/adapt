@@ -60,14 +60,10 @@ module.exports = {
   },
 
   transform: function(object, transformation, context) {
-    return transformation.run(object, context);
+    return transformation.execute(object, context);
   },
 
   transformCollection: function(object, transformation, context) {
-    return transformation.runCollection(object, context);
-  },
-
-  clone: function(object) {
-    return JSON.parse(JSON.stringify(object));
+    return transformation.executeCollection(object, context);
   }
 }

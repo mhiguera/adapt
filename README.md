@@ -49,6 +49,10 @@ Output:
 
 Changelog
 =========
+* 0.2.10
+  * New method names (the old ones were aliased)
+  * Dot-notation transformation (expandDots(regex) method)
+
 * 0.2.9
   * Added removePropertyIf transformation method
   * Added mergeCollections transformation method

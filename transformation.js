@@ -1,3 +1,4 @@
+var utils = require('./utils');
 var Transformation = function() {
   this.stack = [];
 }
@@ -27,22 +28,14 @@ Transformation.prototype.getContext = function() {
   return this.context;
 }
 
-Transformation.prototype.runCollection  = function(object, context) {
+Transformation.prototype.executeCollection  = function(object, context) {
   var self = this;
-  return object.map(function(o) { return self.run(o, context) });
+  return object.map(function(o) { return self.execute(o, context) });
 }
 
-Transformation.prototype.run = function(source, context) {
-  var object;
-  if (source instanceof Array) {
-    object = [];
-    for (var i=0; i < source.length; i++) object[i] = source[i];
-  }else if ('object' === typeof source) {
-    object = {};
-    for (var i in source) object[i] = source[i];
-  }
-  else object = source;
-  if (this.loopback) object = this.loopback.run(object, context);
+Transformation.prototype.execute = function(source, context) {
+  var object = utils.clone(source);
+  if (this.loopback) object = this.loopback.execute(object, context);
   if (context) this.context = context;
   this.stack.forEach(function(transform) {
     object = transform(object);
@@ -66,14 +59,14 @@ Transformation.addMethod('unsetContext', function(context) {
   }
 })
 
-Transformation.addMethod('removeProperty', function(propName) {
+Transformation.addMethod('remove', function(propName) {
   return function(object) {
     delete object[propName];
     return object;
   }
 })
 
-Transformation.addMethod('filterProperties', function(arr) {
+Transformation.addMethod('filter', function(arr) {
   return function(object) {
     for (var prop in object) {
       if (!~arr.indexOf(prop)) delete object[prop];
@@ -82,14 +75,14 @@ Transformation.addMethod('filterProperties', function(arr) {
   }
 })
 
-Transformation.addMethod('castProperty', function(propName, cast) {
+Transformation.addMethod('cast', function(propName, cast) {
   return function(object) {
     object[propName] = cast(object[propName]);
     return object;
   }
 })
 
-Transformation.addMethod('renameProperty', function(oldPropName, newPropName) {
+Transformation.addMethod('rename', function(oldPropName, newPropName) {
   return function(object) {
     object[newPropName] = object[oldPropName];
     delete object[oldPropName];
@@ -97,11 +90,11 @@ Transformation.addMethod('renameProperty', function(oldPropName, newPropName) {
   }
 })
 
-Transformation.addMethod('setProperty', function(propName, value) {
+Transformation.addMethod('set', function(propName, value) {
   var self = this;
   return function(object) {
     var v = value;
-    if (value instanceof Transformation)  v = value.run(object, self.getContext());
+    if (value instanceof Transformation)  v = value.execute(object, self.getContext());
     else if ('function' === typeof value) v = value.call(object, self.getContext());
     object[propName] = ('undefined' !== typeof v)? v : object[propName];
     return object;
@@ -114,7 +107,7 @@ Transformation.addMethod('setProperties', function(properties) {
     for (var propName in properties) {
       var value = properties[propName];
       var v = value;
-      if (value instanceof Transformation)  v = value.run(object, self.getContext());
+      if (value instanceof Transformation)  v = value.execute(object, self.getContext());
       else if ('function' === typeof value) v = value.call(object, self.getContext());
       object[propName] = ('undefined' !== typeof v)? v : object[propName];
     }
@@ -122,15 +115,15 @@ Transformation.addMethod('setProperties', function(properties) {
   }
 })
 
-Transformation.addMethod('cloneProperty', function(propName, targetName) {
+Transformation.addMethod('clone', function(propName, targetName) {
   return function(object) {
     if (!object[propName]) return object;
-    object[targetName] = JSON.parse(JSON.stringify(object[propName]));
+    object[targetName] = utils.clone(object[propName]);
     return object;
   }
 })
 
-Transformation.addMethod('runCommand', function(command) {
+Transformation.addMethod('run', function(command) {
   var self = this;
   return function(object) {
     command.call(object, self.getContext());
@@ -138,13 +131,13 @@ Transformation.addMethod('runCommand', function(command) {
   }
 })
 
-Transformation.addMethod('extractFromProperty', function(propName) {
+Transformation.addMethod('extract', function(propName) {
   return function(object) {
     return object[propName];
   }
 })
 
-Transformation.addMethod('expandAsProperty', function(propName) {
+Transformation.addMethod('expand', function(propName) {
   return function(object) {
     var o = {};
     o[propName] = object;
@@ -152,7 +145,7 @@ Transformation.addMethod('expandAsProperty', function(propName) {
   }
 })
 
-Transformation.addMethod('transformProperty', function(propName, transformation, newContext) {
+Transformation.addMethod('transform', function(propName, transformation, newContext) {
   var self = this;
   var transformProperty = function(object, propName) {
     var context;
@@ -160,7 +153,7 @@ Transformation.addMethod('transformProperty', function(propName, transformation,
     if (newContext && newContext instanceof Function) context = newContext.call(object, self.getContext())
     else if (newContext) context = newContext;
     else context = self.getContext();
-    return transformation.run(property, context);
+    return transformation.execute(property, context);
   }
   return function(object) {
     if (!object[propName]) return object;
@@ -178,7 +171,7 @@ Transformation.addMethod('transformCollection', function(propName, transformatio
     if (newContext && newContext instanceof Function) context = newContext.call(object, self.getContext())
     else if (newContext) context = newContext;
     else context = self.getContext();
-    return transformation.runCollection(property, context);
+    return transformation.executeCollection(property, context);
   }
   return function(object) {
     if (!object[propName]) return object;
@@ -192,7 +185,7 @@ Transformation.addMethod('recursiveTransform', function(propName) {
   var self = this;
   return function(object) {
     if (!object[propName]) return object;
-    var transformed = self.run(object[propName], self.getContext());
+    var transformed = self.execute(object[propName], self.getContext());
     object[propName] = transformed;
     return object;
   }
@@ -202,13 +195,13 @@ Transformation.addMethod('recursiveTransformCollection', function(propName) {
   var self = this;
   return function(object) {
     if (!object[propName]) return object;
-    var transformed = self.runCollection(object[propName], self.getContext());
+    var transformed = self.executeCollection(object[propName], self.getContext());
     object[propName] = transformed;
     return object;
   }
 })
 
-Transformation.addMethod('groupProperties', function(properties, propName) {
+Transformation.addMethod('group', function(properties, propName) {
   return function(object) {
     var found = false;
     var o = {};
@@ -238,7 +231,7 @@ Transformation.addMethod('mergeCollections', function(properties, propName) {
   }
 })
 
-Transformation.addMethod('removePropertyIf', function(propName, value) {
+Transformation.addMethod('removeIf', function(propName, value) {
   return function(object) {
     if (value instanceof Function && value.call(object)) delete object[propName];
     else if (object[propName] == value) delete object[propName];
@@ -265,6 +258,49 @@ Transformation.addMethod('checkDependencies', function(properties, message) {
     return object;
   }
 })
-Transformation.aliasMethod('assignProperty',   'setProperty');
-Transformation.aliasMethod('assignProperties', 'setProperties');
+
+Transformation.addMethod('expandDots', function(regex) {
+  return function(object) {
+    var pattern = regex || /(^[a-zA-Z\-\_\.\[\]\'\"\d]*$)/;
+    var keys = Object.keys(object).filter(function(k) {
+      if (!k.match(pattern)) return false;
+      return !!~k.indexOf('.');
+    });
+    keys.forEach(function(k) {
+      var value = object[k];
+      var levels = k.split('.');
+      var currLevel, scope = object;
+      while (levels.length) {
+        currLevel = levels.shift();
+        var leaf = (levels.length == 0);
+        if (!leaf) {
+          scope[currLevel] = scope[currLevel] || {};
+          scope = scope[currLevel];
+        } else scope[currLevel] = scope[currLevel] || value;
+      }
+      delete object[k];
+    })
+    return object;
+  }
+});
+
+Transformation.aliasMethod('setProperty',         'set');
+Transformation.aliasMethod('renameProperty',      'rename');
+Transformation.aliasMethod('cloneProperty',       'clone');
+Transformation.aliasMethod('expandAsProperty',    'expand');
+Transformation.aliasMethod('extractFromProperty', 'extract');
+Transformation.aliasMethod('castProperty',        'cast');
+Transformation.aliasMethod('transformProperty',   'transform');
+Transformation.aliasMethod('filterProperties',    'filter');
+Transformation.aliasMethod('groupProperties',     'group');
+Transformation.aliasMethod('runCommand',          'run');
+Transformation.aliasMethod('removeProperty',      'remove');
+Transformation.aliasMethod('removePropertyIf',    'removeIf');
+
+
+Transformation.aliasMethod('assignProperty',      'set');
+Transformation.aliasMethod('assignProperties',    'setProperties');
+
+
+
 module.exports = Transformation;

@@ -429,5 +429,33 @@ describe('adapt', function() {
       should.exist(transformed);
       should.exist(transformed.prop);
     })
+
+    it('should transform dot-notation properties into object properties', function() {
+      var test = {};
+      test['a.b.c'] = 1;
+      test['a.d.e'] = 1;
+      var transformation = adapt.createTransformation().expandDots();
+      var transformed = adapt.transform(test, transformation);
+      should.exist(transformed);
+      should.exist(transformed.a);
+      should.exist(transformed.a.b);
+      should.exist(transformed.a.b.c);
+      transformed.a.b.c.should.equal(1);
+      transformed.a.d.e.should.equal(1);
+    })
+
+    it('should transform dot-notation properties (matching a regex) into object properties', function() {
+      var test = {};
+      test['a.b.c'] = 1;
+      test['d.e.f'] = 1;
+      var transformation = adapt.createTransformation().expandDots(/^a/);
+      var transformed = adapt.transform(test, transformation);
+      should.exist(transformed);
+      should.exist(transformed.a);
+      should.exist(transformed.a.b);
+      should.exist(transformed.a.b.c);
+      transformed.a.b.c.should.equal(1);
+      should.exist(transformed['d.e.f']);
+    })
   });
 });
