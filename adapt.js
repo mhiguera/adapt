@@ -65,7 +65,7 @@ module.exports = {
 
   transformCollection: function(object, transformation, context) {
     return transformation.executeCollection(object, context);
-  }
+  },
 
   clone: function(object) {
     return require('./utils').clone(object);

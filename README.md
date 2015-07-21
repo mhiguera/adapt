@@ -49,7 +49,7 @@ Output:
 
 Changelog
 =========
-* 0.2.12
+* 0.2.13
   * Bugfixes
 
 * 0.2.10
