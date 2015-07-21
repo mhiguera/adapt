@@ -49,6 +49,9 @@ Output:
 
 Changelog
 =========
+* 0.2.11
+  * Bugfixes
+
 * 0.2.10
   * New method names (the old ones were aliased)
   * Dot-notation transformation (expandDots(regex) method)

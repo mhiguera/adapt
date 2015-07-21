@@ -242,7 +242,7 @@ Transformation.addMethod('removeIf', function(propName, value) {
 Transformation.addMethod('concat', function(transformation, context) {
   var self = this;
   return function(object) {
-    return transformation.run(object, context || self.getContext());
+    return transformation.execute(object, context || self.getContext());
   }
 })
 
