@@ -1,10 +1,24 @@
+var format = require('util').format;
 var utils = require('./utils');
 var Transformation = function() {
   this.stack = [];
 }
 
+function getDeprecationLine() {
+  var stack = new Error().stack;
+  var line = stack.split('\n')[3];
+  var regex = /(\(([\w._\-\/]+):(\d+):(\d+)\)$)/;
+  var info = line.match(regex);
+  var path = require('path').relative('.', info[2]);
+  return format('Line #%d at %s', info[3], path);
+}
+
 Transformation.aliasMethod = function(methodName, aliasedMethod) {
-  Transformation.prototype[methodName] = Transformation.prototype[aliasedMethod];
+  Transformation.prototype[methodName] = function() {
+    var line = getDeprecationLine();
+    console.warn('ADAPT DEPRECATION WARNING: %s has been renamed to %s (%s)', methodName, aliasedMethod, line);
+    return Transformation.prototype[aliasedMethod].apply(this, arguments);
+  }
 }
 
 Transformation.addMethod = function(methodName, fn) {
@@ -34,13 +48,11 @@ Transformation.prototype.executeCollection  = function(object, context) {
 }
 
 Transformation.prototype.execute = function(source, context) {
-  var object = utils.clone(source);
-  if (this.loopback) object = this.loopback.execute(object, context);
+  source = utils.shallowCopy(source);
+  if (this.loopback) source = this.loopback.execute(source, context);
   if (context) this.context = context;
-  this.stack.forEach(function(transform) {
-    object = transform(object);
-  });
-  return object;
+  this.stack.forEach(function(t) { source = t(source) });
+  return source;
 }
 
 Transformation.addMethod('setContext', function(context) {
