@@ -49,6 +49,12 @@ Output:
 
 Changelog
 =========
+* 0.2.14
+  * New utils (extend, extendCircular, shallowCopy, cloneCircular, cloneJSON)
+  * Older methods show a deprecation warning
+  * Minor bugfixes and improvements
+  * Tests were updated
+
 * 0.2.13
   * Bugfixes
 
