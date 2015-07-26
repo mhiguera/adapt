@@ -1,5 +1,6 @@
 var Transformation = require('./transformation');
 module.exports = {
+  utils: require('./utils'),
   tap: {
     get: function(propName) {
       return function() {
@@ -19,7 +20,6 @@ module.exports = {
         }
       }
     },
-
 
     equals: function(prop1, prop2) {
       return function () {
@@ -68,6 +68,7 @@ module.exports = {
   },
 
   clone: function(object) {
-    return require('./utils').clone(object);
+    console.warn('ADAPT DEPRECATION WARNING: adapt.clone will be removed in the next release. Use adapt.utils.clone instead')
+    return this.utils.clone(object);
   }
 }
