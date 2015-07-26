@@ -22,7 +22,7 @@ describe('adapt', function() {
     it('should remove a property when asked to', function() {
       var test = { prop1: '1', prop2: 'b', prop3: 'c' }
       var transformation = adapt.createTransformation();
-      transformation.removeProperty('prop1');
+      transformation.remove('prop1');
       var transformed = adapt.transform(test, transformation);
       should.exist(transformed);
       should.not.exist(transformed.prop1);
@@ -35,7 +35,7 @@ describe('adapt', function() {
       var t = { prop1: '1', prop2: 'b', prop3: 'c' }
       var test = [t,t,t];
       var transformation = adapt.createTransformation();
-      transformation.removeProperty('prop1');
+      transformation.remove('prop1');
       var transformed = adapt.transformCollection(test, transformation);
       should.exist(transformed);
       should.not.exist(transformed[0].prop1);
@@ -49,8 +49,8 @@ describe('adapt', function() {
     it('should remove two properties when asked to', function() {
       var test = { prop1: '1', prop2: 'b', prop3: 'c' }
       var transformation = adapt.createTransformation();
-      transformation.removeProperty('prop1');
-      transformation.removeProperty('prop2');
+      transformation.remove('prop1');
+      transformation.remove('prop2');
       var transformed = adapt.transform(test, transformation);
       should.exist(transformed);
       should.not.exist(transformed.prop1);
@@ -61,7 +61,7 @@ describe('adapt', function() {
     it('should remove two properties when asked to (chain)', function() {
       var test = { prop1: '1', prop2: 'b', prop3: 'c' }
       var transformation = adapt.createTransformation();
-      transformation.removeProperty('prop1').removeProperty('prop2');
+      transformation.remove('prop1').remove('prop2');
       var transformed = adapt.transform(test, transformation);
       should.exist(transformed);
       should.not.exist(transformed.prop1);
@@ -72,7 +72,7 @@ describe('adapt', function() {
     it('should cast a property given a castType', function() {
       var test = { prop1: '1', prop2: 'b', prop3: 'c' }
       var transformation = adapt.createTransformation();
-      transformation.castProperty('prop1', Number);
+      transformation.cast('prop1', Number);
       var transformed = adapt.transform(test, transformation);
       should.exist(transformed);
       should.exist(transformed.prop1);
@@ -82,7 +82,7 @@ describe('adapt', function() {
     it('should rename a property once', function() {
       var test = { prop: 'a' }
       var transformation = adapt.createTransformation();
-      transformation.renameProperty('prop', 'property')
+      transformation.rename('prop', 'property')
       var transformed = adapt.transform(test, transformation);
       should.exist(transformed);
       should.exist(transformed.property)
@@ -92,9 +92,9 @@ describe('adapt', function() {
       var test = { prop1: '1', prop2: 'b', prop3: 'c' }
       var transformation = adapt.createTransformation();
       transformation
-        .renameProperty('prop1', 'a')
-        .renameProperty('a', 'alpha')
-        .renameProperty('alpha', 'prop1');
+        .rename('prop1', 'a')
+        .rename('a', 'alpha')
+        .rename('alpha', 'prop1');
       var transformed = adapt.transform(test, transformation);
       should.exist(transformed);
       transformed.prop1.should.equal(test.prop1);
@@ -105,7 +105,7 @@ describe('adapt', function() {
     it('should assign a property', function() {
       var test = { prop1: 1, prop2: 2, prop3: 3 }
       var transformation = adapt.createTransformation();
-      transformation.assignProperty('sum', 6);
+      transformation.set('sum', 6);
       var transformed = adapt.transform(test, transformation);
       should.exist(transformed);
       should.exist(transformed.sum);
@@ -115,7 +115,7 @@ describe('adapt', function() {
     it('should assign some properties', function() {
       var test = { prop1: 1, prop2: 2, prop3: 3 }
       var transformation = adapt.createTransformation();
-      transformation.assignProperties({
+      transformation.setProperties({
         sum: 6,
         count: 3
       });
@@ -129,7 +129,7 @@ describe('adapt', function() {
     it('should clone a property (primitive)', function() {
       var test = { prop1: 1 }
       var transformation = adapt.createTransformation();
-      transformation.cloneProperty('prop1', 'prop2');
+      transformation.clone('prop1', 'prop2');
       var transformed = adapt.transform(test, transformation);
       should.exist(transformed);
       should.exist(transformed.prop2);
@@ -139,7 +139,7 @@ describe('adapt', function() {
     it('should clone a property (non-primitive)', function() {
       var test = { prop1: [1,2,3] }
       var transformation = adapt.createTransformation();
-      transformation.cloneProperty('prop1', 'prop2');
+      transformation.clone('prop1', 'prop2');
       var transformed = adapt.transform(test, transformation);
       should.exist(transformed);
       should.exist(transformed.prop2);
@@ -151,7 +151,7 @@ describe('adapt', function() {
     it('should compute a property', function() {
       var test = { prop1: 1, prop2: 2, prop3: 3 }
       var transformation = adapt.createTransformation();
-      transformation.assignProperty('sum', function() {
+      transformation.set('sum', function() {
         var sum = 0;
         for (var prop in this) sum += this[prop];
         return sum;
@@ -168,8 +168,8 @@ describe('adapt', function() {
         if (this.value < 10) return this.value * 10;
       }
       var transformation = adapt.createTransformation();
-      transformation.assignProperty('value', fn);
-      transformation.assignProperty('value', fn);
+      transformation.set('value', fn);
+      transformation.set('value', fn);
       var transformed = adapt.transform(test, transformation);
       should.exist(transformed);
       should.exist(transformed.value);
@@ -184,7 +184,7 @@ describe('adapt', function() {
       }
       var transformation = adapt.createTransformation()
         .setContext(10)
-        .assignProperty('sum', sum)
+        .set('sum', sum)
 
       var transformed = adapt.transform(test, transformation);
       should.exist(transformed);
@@ -195,7 +195,7 @@ describe('adapt', function() {
     it('should pass a context through adapt', function() {
       var test = { prop1: 'a', prop2: 'b' }
       var transformation = adapt.createTransformation()
-        .assignProperty('concat', function(ctx) { return [this.prop1, this.prop2].join(ctx) })
+        .set('concat', function(ctx) { return [this.prop1, this.prop2].join(ctx) })
       var transformed = adapt.transform(test, transformation, '+');
       should.exist(transformed);
       should.exist(transformed.concat);
@@ -211,7 +211,7 @@ describe('adapt', function() {
       var transformation = adapt.createTransformation()
         .setContext(10)
         .unsetContext()
-        .assignProperty('sum', sum)
+        .set('sum', sum)
 
       var transformed = adapt.transform(test, transformation);
       should.exist(transformed);
@@ -222,7 +222,7 @@ describe('adapt', function() {
     it('should run a command', function() {
       var test = { list: [] };
       var command = function() { var i=32; while (i--) this.list[i] = Math.pow(2,i) }
-      var transformation = adapt.createTransformation().runCommand(command)
+      var transformation = adapt.createTransformation().run(command)
       var transformed = adapt.transform(test, transformation);
       should.exist(transformed);
       should.exist(transformed.list);
@@ -233,7 +233,7 @@ describe('adapt', function() {
 
     it('should expand an object', function() {
       var test = 'test';
-      var transformation = adapt.createTransformation().expandAsProperty('text')
+      var transformation = adapt.createTransformation().expand('text')
       var transformed = adapt.transform(test, transformation);
       should.exist(transformed);
       should.exist(transformed.text);
@@ -242,7 +242,7 @@ describe('adapt', function() {
 
     it('should extract an object from property', function() {
       var test = { 'text': 'test' }
-      var transformation = adapt.createTransformation().extractFromProperty('text')
+      var transformation = adapt.createTransformation().extract('text')
       var transformed = adapt.transform(test, transformation);
       should.exist(transformed);
       transformed.should.equal('test');
@@ -250,8 +250,8 @@ describe('adapt', function() {
 
     it('should transform a property', function() {
       var test = { 'prop': 'value' }
-      var sub = adapt.createTransformation().expandAsProperty('inner');
-      var transformation = adapt.createTransformation().transformProperty('prop', sub);
+      var sub = adapt.createTransformation().expand('inner');
+      var transformation = adapt.createTransformation().transform('prop', sub);
       var transformed = adapt.transform(test, transformation);
       should.exist(transformed);
       should.exist(transformed.prop);
@@ -260,8 +260,8 @@ describe('adapt', function() {
 
     it('should transform a property passing a context', function() {
       var test = { 'inner': { 'prop': 'value' } };
-      var sub = adapt.createTransformation().assignProperty('context', function(ctx) { return ctx } );
-      var transformation = adapt.createTransformation().transformProperty('inner', sub);
+      var sub = adapt.createTransformation().set('context', function(ctx) { return ctx } );
+      var transformation = adapt.createTransformation().transform('inner', sub);
       var transformed = adapt.transform(test, transformation, 'contextValue');
       should.exist(transformed);
       should.exist(transformed.inner);
@@ -271,7 +271,7 @@ describe('adapt', function() {
 
     it('should transform a collection-property passing a context', function() {
       var test = { 'inner': [{ 'prop': 'value' }, { 'prop': 'value' }] };
-      var sub = adapt.createTransformation().assignProperty('context', function(ctx) { return ctx } );
+      var sub = adapt.createTransformation().set('context', function(ctx) { return ctx } );
       var transformation = adapt.createTransformation().transformCollection('inner', sub);
       var transformed = adapt.transform(test, transformation, 'contextValue');
       should.exist(transformed);
@@ -285,9 +285,9 @@ describe('adapt', function() {
     it('should branch a transformation', function() {
       var test1 = { prop: 1 };
       var test2 = { prop: 2 };
-      var transformation = adapt.createTransformation().expandAsProperty('expanded');
-      var branch1 = transformation.branch().renameProperty('expanded', 'someProperties');
-      var branch2 = transformation.branch().renameProperty('expanded', 'otherProperties');
+      var transformation = adapt.createTransformation().expand('expanded');
+      var branch1 = transformation.branch().rename('expanded', 'someProperties');
+      var branch2 = transformation.branch().rename('expanded', 'otherProperties');
       var transformed1 = adapt.transform(test1, branch1);
       var transformed2 = adapt.transform(test2, branch2);
       should.exist(transformed1);
@@ -301,7 +301,7 @@ describe('adapt', function() {
     it('should recursively run a transformation', function() {
       var test = { prop: 1, child: { prop: 2, child: { prop: 3 }}}
       var transformation = adapt.createTransformation()
-        .assignProperty('test', 'test')
+        .set('test', 'test')
         .recursiveTransform('child')
       var transformed = adapt.transform(test, transformation);
       should.exist(transformed);
@@ -313,7 +313,7 @@ describe('adapt', function() {
     it('should group properties in another property', function() {
       var test = { prop1: 'a', prop2: 'b', prop3: 'c' }
       var transformation = adapt.createTransformation()
-        .groupProperties(['prop1', 'prop2', 'prop3'], 'group');
+        .group(['prop1', 'prop2', 'prop3'], 'group');
       var transformed = adapt.transform(test, transformation);
       should.exist(transformed);
       should.exist(transformed.group);
@@ -324,7 +324,7 @@ describe('adapt', function() {
     it('should numberize a property when asked to', function() {
       var test = { p: '123' }
       var transformation = adapt.createTransformation()
-        .setProperty('pnum', adapt.tap.numberize('p'));
+        .set('pnum', adapt.tap.numberize('p'));
       var transformed = adapt.transform(test, transformation);
       should.exist(transformed);
       should.exist(transformed.pnum);
@@ -334,7 +334,7 @@ describe('adapt', function() {
     it('should assign a tapped variable', function() {
       var test = { depth1: [{ depth2: { depth3: [0,1,2,3,4] }}]};
       var transformation = adapt.createTransformation()
-      transformation.setProperty('value', adapt.tap.get('depth1[0].depth2.depth3[2]'));
+      transformation.set('value', adapt.tap.get('depth1[0].depth2.depth3[2]'));
       var transformed = adapt.transform(test, transformation);
       should.exist(transformed);
       should.exist(transformed.value);
@@ -344,7 +344,7 @@ describe('adapt', function() {
     it('should assign a tapped variable name', function() {
       var test = { depth1: [{ depth2: { depth3: [0,1,2,3,4] }}]};
       var transformation = adapt.createTransformation();
-      transformation.runCommand(adapt.tap.set('depth1[0].depth2.depth3[2]', 'test'));
+      transformation.run(adapt.tap.set('depth1[0].depth2.depth3[2]', 'test'));
       var transformed = adapt.transform(test, transformation);
       should.exist(transformed);
       should.exist(transformed.depth1[0].depth2.depth3[2]);
@@ -355,7 +355,7 @@ describe('adapt', function() {
       var test1 = { propName: 'propValue' }
       var test2 = test1;
       var transformation = adapt.createTransformation();
-      transformation.expandAsProperty('expanded');
+      transformation.expand('expanded');
       var transformed1 = adapt.transform(test1, transformation);
       should.exist(transformed1);
       should.exist(transformed1.expanded);
@@ -398,7 +398,7 @@ describe('adapt', function() {
       var test = {};
       test.prop = 1;
       var transformation = adapt.createTransformation();
-      transformation.removePropertyIf('prop', 1)
+      transformation.removeIf('prop', 1)
       var transformed = adapt.transform(test, transformation);
       should.exist(transformed);
       should.not.exist(transformed.prop);
@@ -409,7 +409,7 @@ describe('adapt', function() {
       test.remove = true;
       test.prop = 1;
       var transformation = adapt.createTransformation();
-      transformation.removePropertyIf('prop', function() {
+      transformation.removeIf('prop', function() {
         return test.remove;
       })
       var transformed = adapt.transform(test, transformation);
@@ -422,7 +422,7 @@ describe('adapt', function() {
       test.remove = false;
       test.prop = 1;
       var transformation = adapt.createTransformation();
-      transformation.removePropertyIf('prop', function() {
+      transformation.removeIf('prop', function() {
         return test.remove;
       })
       var transformed = adapt.transform(test, transformation);
