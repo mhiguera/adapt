@@ -218,12 +218,10 @@ Transformation.addMethod('group', function(properties, propName) {
     var found = false;
     var o = {};
     properties.forEach(function(fromName) {
-      if (!object[fromName]) return;
-      found = true;
       o[fromName] = object[fromName];
       delete object[fromName];
     })
-    if (found) object[propName] = o;
+    object[propName] = o;
     return object;
   }
 })

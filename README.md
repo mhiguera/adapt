@@ -49,6 +49,9 @@ Output:
 
 Changelog
 =========
+* 0.2.15
+  * Group transformation now groups null properties as well.
+
 * 0.2.14
   * New utils (extend, extendCircular, shallowCopy, cloneCircular, cloneJSON)
   * Older methods show a deprecation warning
