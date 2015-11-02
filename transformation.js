@@ -1,3 +1,4 @@
+var inspect = require('util').inspect;
 var format = require('util').format;
 var utils = require('./utils');
 var Transformation = function() {
@@ -293,6 +294,14 @@ Transformation.addMethod('expandDots', function(regex) {
     return object;
   }
 });
+
+Transformation.addMethod('inspect', function(handler) {
+  return function(object) {
+    handler = handler || console.log;
+    handler(inspect(object, { depth: null, colors: true }));
+    return object;
+  }
+})
 
 Transformation.aliasMethod('setProperty',         'set');
 Transformation.aliasMethod('renameProperty',      'rename');

@@ -49,6 +49,9 @@ Output:
 
 Changelog
 =========
+* 0.2.16
+  * New "inspect" transformation
+
 * 0.2.15
   * Group transformation now groups null properties as well.
 
