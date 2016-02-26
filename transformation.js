@@ -8,7 +8,7 @@ var Transformation = function() {
 function getDeprecationLine() {
   var stack = new Error().stack;
   var line = stack.split('\n')[3];
-  var regex = /(\(([\w._\-\/]+):(\d+):(\d+)\)$)/;
+  var regex = /(\(([\w.+\s_\-\/]+):(\d+):(\d+)\)$)/;
   var info = line.match(regex);
   var path = require('path').relative('.', info[2]);
   return format('Line #%d at %s', info[3], path);
