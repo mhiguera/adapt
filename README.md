@@ -10,8 +10,8 @@ var data = {
 }
 
 var fullName = adapt.createTransformation()
-  .expandAsProperty('full_name')
-  .runCommand(function() {
+  .expand('full_name')
+  .run(function() {
     var split = this.full_name.split(' ');
     this.name = split[0];
     this.surname = split[1];
@@ -20,9 +20,9 @@ var fullName = adapt.createTransformation()
 
 var family = adapt.createTransformation()
   .transformCollection('children', fullName)
-  .transformProperty('father', fullName)
-  .transformProperty('mother', fullName)
-  .assignProperty('children_count', function() {
+  .transform('father', fullName)
+  .transform('mother', fullName)
+  .set('children_count', function() {
     return this.children.length;
   });
 
