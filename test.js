@@ -457,5 +457,195 @@ describe('adapt', function() {
       transformed.a.b.c.should.equal(1);
       should.exist(transformed['d.e.f']);
     })
+
+    it('should remove all properties passed as array', function() {
+      var test = {};
+      test.a = 1;
+      test.b = 1;
+      test.c = 1;
+      var transformation = adapt.createTransformation().remove(['a','b']);
+      var transformed = adapt.transform(test, transformation);
+      should.exist(transformed);
+      should.not.exist(transformed.a);
+      should.not.exist(transformed.b);
+      should.exist(transformed.c);
+    })
+
+    it('should remove all null properties', function() {
+      var test = {};
+      test.a = null;
+      test.b = null;
+      test.c = 1;
+      var transformation = adapt.createTransformation().removeNils();
+      var transformed = adapt.transform(test, transformation);
+      should.exist(transformed);
+      should.not.exist(transformed.a);
+      should.not.exist(transformed.b);
+      should.exist(transformed.c);
+    })
+
+    it('should remove all null properties, even the nested ones', function() {
+      var test = {};
+      test.a = null;
+      test.b = null;
+      test.c = {};
+      test.c.c1 = null;
+      test.c.c2 = null;
+      test.c.c3 = 1;
+      var transformation = adapt.createTransformation().removeNils(true);
+      var transformed = adapt.transform(test, transformation);
+      should.exist(transformed);
+      should.not.exist(transformed.a);
+      should.not.exist(transformed.b);
+      should.exist(transformed.c);
+      should.not.equal(transformed.c.c1, null);
+      should.not.equal(transformed.c.c2, null);
+      should.exist(transformed.c.c3);
+    })
+
+    it('should remove all null properties, even the nested ones', function() {
+      var test = {};
+      test.a = null;
+      test.b = null;
+      test.c = {};
+      test.c.c1 = null;
+      test.c.c2 = null;
+      test.c.c3 = 1;
+      var transformation = adapt.createTransformation().removeNils(false);
+      var transformed = adapt.transform(test, transformation);
+      should.exist(transformed);
+      should.not.exist(transformed.a);
+      should.not.exist(transformed.b);
+      should.exist(transformed.c);
+      should.equal(transformed.c.c1, null);
+      should.equal(transformed.c.c2, null);
+      should.exist(transformed.c.c3);
+    })
+
+    it('should remove all empty arrays', function() {
+      var test = {};
+      test.a = [];
+      test.b = [];
+      test.c = 1;
+      var transformation = adapt.createTransformation().removeEmptyArrays(false);
+      var transformed = adapt.transform(test, transformation);
+      should.exist(transformed);
+      should.not.exist(transformed.a);
+      should.not.exist(transformed.b);
+      should.exist(transformed.c);
+    })
+
+    it('should remove all empty arrays, even the nested ones', function() {
+      var test = {};
+      test.a = [];
+      test.b = [1];
+      test.c = {};
+      test.c.c1 = [];
+      test.c.c2 = [1,2,3];
+      test.c.c3 = 1;
+      var transformation = adapt.createTransformation().removeEmptyArrays(true);
+      var transformed = adapt.transform(test, transformation);
+      should.exist(transformed);
+      should.not.exist(transformed.a);
+      should.exist(transformed.b);
+      should.exist(transformed.c);
+      should.not.exist(transformed.c.c1);
+      should.exist(transformed.c.c2);
+      should.exist(transformed.c.c3);
+    })
+
+    
+    it('should remove all empty strings', function() {
+      var test = {};
+      test.a = '';
+      test.b = '';
+      test.c = 1;
+      var transformation = adapt.createTransformation().removeEmptyStrings(false);
+      var transformed = adapt.transform(test, transformation);
+      should.exist(transformed);
+      should.not.exist(transformed.a);
+      should.not.exist(transformed.b);
+      should.exist(transformed.c);
+    })
+
+    it('should remove all empty strings, even the nested ones', function() {
+      var test = {};
+      test.a = ''
+      test.b = 1;
+      test.c = {};
+      test.c.c1 = '';
+      test.c.c2 = [1,2,3];
+      test.c.c3 = '1';
+      var transformation = adapt.createTransformation().removeEmptyStrings(true);
+      var transformed = adapt.transform(test, transformation);
+      should.exist(transformed);
+      should.not.exist(transformed.a);
+      should.exist(transformed.b);
+      should.exist(transformed.c);
+      should.not.exist(transformed.c.c1);
+      should.exist(transformed.c.c2);
+      should.exist(transformed.c.c3);
+    })
+
+    it('should remove all properties matching a pattern', function() {
+      var test = {};
+      test.a = 1;
+      test.b = 2;
+      test.c = 1;
+      var transformation = adapt.createTransformation().removeByPattern(/^[ab]$/);
+      var transformed = adapt.transform(test, transformation);
+      should.not.exist(transformed.a);
+      should.not.exist(transformed.b);
+      should.exist(transformed.c);
+    })
+
+    it('should remove all properties matching a pattern, even the nested ones', function() {
+      var test = {};
+      test.a = 1;
+      test.b = 2;
+      test.c = {};
+      test.c.a = 1;
+      test.c.b = 2;
+      test.c.c = 3;
+      var transformation = adapt.createTransformation().removeByPattern(/^[ab]$/, true);
+      var transformed = adapt.transform(test, transformation);
+      should.not.exist(transformed.a);
+      should.not.exist(transformed.b);
+      should.exist(transformed.c);
+      should.not.exist(transformed.c.a);
+      should.not.exist(transformed.c.b);
+      should.exist(transformed.c.c);
+    })
+
+    it('should rename camel-cased properties to snake-cased', function() {
+      var test = {};
+      test.dummyProperty = 1;
+      test.OtherDummyProperty = {};
+      test.OtherDummyProperty.AnotherOneBitesTheDust = 2;
+      var transformation = adapt.createTransformation().camelToSnake();
+      var transformed = adapt.transform(test, transformation);
+      should.not.exist(transformed.dummyProperty);
+      should.not.exist(transformed.OtherDummyProperty);
+      should.exist(transformed.dummy_property);
+      should.exist(transformed.other_dummy_property);
+      should.exist(transformed.other_dummy_property);
+      should.exist(transformed.other_dummy_property.AnotherOneBitesTheDust);
+    })
+
+    it('should rename camel-cased properties to snake-cased, even the nested ones', function() {
+      var test = {};
+      test.dummyProperty = 1;
+      test.OtherDummyProperty = {};
+      test.OtherDummyProperty.AnotherOneBitesTheDust = 2;
+      var transformation = adapt.createTransformation().camelToSnake(true);
+      var transformed = adapt.transform(test, transformation);
+      should.not.exist(transformed.dummyProperty);
+      should.not.exist(transformed.OtherDummyProperty);
+      should.exist(transformed.dummy_property);
+      should.exist(transformed.other_dummy_property);
+      should.exist(transformed.other_dummy_property);
+      should.exist(transformed.other_dummy_property.another_one_bites_the_dust);
+    })
+
   });
 });

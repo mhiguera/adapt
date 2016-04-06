@@ -49,6 +49,15 @@ Output:
 
 Changelog
 =========
+* 0.2.17
+  * New transformations:
+    * `removeNils` removes empty objects
+    * `removeEmptyStrings` removes empty strings
+    * `removeEmptyArrays` removes empty arrays
+    * `removeByPattern` removes objects matching a RegExp
+    * `camelToSnake` renames camel-cased keys to snake-cased
+  * Remove transformation now accepts an array as argument
+
 * 0.2.16
   * New "inspect" transformation
 

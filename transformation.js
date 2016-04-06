@@ -74,7 +74,9 @@ Transformation.addMethod('unsetContext', function(context) {
 
 Transformation.addMethod('remove', function(propName) {
   return function(object) {
-    delete object[propName];
+    if (propName instanceof Array) {
+      propName.forEach(function(p) { delete object[p] });
+    }else delete object[propName];
     return object;
   }
 })
@@ -294,6 +296,90 @@ Transformation.addMethod('expandDots', function(regex) {
     return object;
   }
 });
+
+Transformation.addMethod('removeNils', function(deep) {
+  var fn = function(object) {
+    for (var i in object) {
+      if (object[i] === null) {
+        delete object[i];
+        continue;
+      } else if (!deep) continue;
+      var type = typeof(object[i]);
+      if (type == 'string' || type == 'number' || this[i] instanceof Array) continue;
+      object[i] = fn.call(object[i], object[i], true);
+    }
+    return object;
+  }
+  return fn;
+})
+
+Transformation.addMethod('removeEmptyStrings', function(deep) {
+  var fn = function(object) {
+    for (var i in object) {
+      if ('string' === typeof(object[i]) && object[i] === '') {
+        delete object[i];
+        continue;
+      } else if (!deep) continue;
+      var type = typeof(object[i]);
+      if (type == 'string' || type == 'number' || this[i] instanceof Array) continue;
+      object[i] = fn.call(object[i], object[i], true);
+    }
+    return object;
+  }
+  return fn;
+})
+
+Transformation.addMethod('removeEmptyArrays', function(deep) {
+  var fn = function(object) {
+    for (var i in object) {
+      if ('object' === typeof(object[i]) && 
+          object[i] instanceof Array && 
+          object[i].length === 0) {
+        delete object[i];
+        continue;
+      } else if (!deep) continue;
+      var type = typeof(object[i]);
+      if (type == 'string' || type == 'number' || this[i] instanceof Array) continue;
+      object[i] = fn.call(object[i], object[i], true);
+    }
+    return object;
+  }
+  return fn;
+})
+
+Transformation.addMethod('removeByPattern', function(pattern, deep) {
+  var fn = function(object) {
+    for (var key in object) {
+      if (key.match(pattern)) {
+        delete object[key];
+        continue;
+      } else if (!deep) continue;
+      object[key] = fn.call(object[key], object[key], true);
+    }
+    return object;
+  }
+  return fn;
+})
+
+Transformation.addMethod('camelToSnake', function(deep) {
+  var fn = function(object) {
+    var toBeRemoved = [];
+    for (var key in object) {
+      if (key.match(/[A-Z]/)) {
+        var firstLetter = key.charAt(0);
+        var rest = key.substr(1, key.length);
+        var toBe = firstLetter.toLowerCase() + rest.replace(/[A-Z]/g, function(match) { return '_' + match.toLowerCase() });
+        object[toBe] = object[key];
+        toBeRemoved.push(key);
+      }
+      if (!deep) continue;
+      object[key] = fn.call(object[key], object[key], true);
+    }
+    toBeRemoved.forEach(function(key) { delete object[key] });
+    return object;
+  }
+  return fn;
+})
 
 Transformation.addMethod('inspect', function(handler) {
   return function(object) {
