@@ -80,7 +80,7 @@ Transformation.addMethod('remove', function(propName, deep) {
         continue;
       } else if (!deep) continue;
       var type = typeof(object[key]);
-      if (type == 'string' || type == 'number' || this[key] instanceof Array) continue;
+      if (type == 'string' || type == 'number') continue;
       object[key] = removeByPattern.call(object[key], object[key], true);
     }
     return object;
