@@ -79,6 +79,8 @@ Transformation.addMethod('remove', function(propName, deep) {
         delete object[key];
         continue;
       } else if (!deep) continue;
+      var type = typeof(object[key]);
+      if (type == 'string' || type == 'number' || this[key] instanceof Array) continue;
       object[key] = removeByPattern.call(object[key], object[key], true);
     }
     return object;
@@ -370,6 +372,8 @@ Transformation.addMethod('camelToSnake', function(deep) {
         toBeRemoved.push(key);
       }
       if (!deep) continue;
+      var type = typeof(object[key]);
+      if (type == 'string' || type == 'number' || this[key] instanceof Array) continue;
       object[key] = fn.call(object[key], object[key], true);
     }
     toBeRemoved.forEach(function(key) { delete object[key] });
