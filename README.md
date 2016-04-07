@@ -49,6 +49,9 @@ Output:
 
 Changelog
 =========
+* 0.2.18
+  * `removeByPattern` transformation deprecated in favour of `remove`
+  
 * 0.2.17
   * New transformations:
     * `removeNils` removes empty objects

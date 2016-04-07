@@ -72,11 +72,22 @@ Transformation.addMethod('unsetContext', function(context) {
   }
 })
 
-Transformation.addMethod('remove', function(propName) {
+Transformation.addMethod('remove', function(propName, deep) {
+  var removeByPattern = function(object) {
+    for (var key in object) {
+      if (key.match(propName)) {
+        delete object[key];
+        continue;
+      } else if (!deep) continue;
+      object[key] = removeByPattern.call(object[key], object[key], true);
+    }
+    return object;
+  }
+  
   return function(object) {
-    if (propName instanceof Array) {
-      propName.forEach(function(p) { delete object[p] });
-    }else delete object[propName];
+    if (propName instanceof Array) propName.forEach(function(p) { delete object[p] });
+    else if (propName instanceof RegExp) removeByPattern(object);
+    else delete object[propName];
     return object;
   }
 })
@@ -347,20 +358,6 @@ Transformation.addMethod('removeEmptyArrays', function(deep) {
   return fn;
 })
 
-Transformation.addMethod('removeByPattern', function(pattern, deep) {
-  var fn = function(object) {
-    for (var key in object) {
-      if (key.match(pattern)) {
-        delete object[key];
-        continue;
-      } else if (!deep) continue;
-      object[key] = fn.call(object[key], object[key], true);
-    }
-    return object;
-  }
-  return fn;
-})
-
 Transformation.addMethod('camelToSnake', function(deep) {
   var fn = function(object) {
     var toBeRemoved = [];
@@ -401,6 +398,7 @@ Transformation.aliasMethod('groupProperties',     'group');
 Transformation.aliasMethod('runCommand',          'run');
 Transformation.aliasMethod('removeProperty',      'remove');
 Transformation.aliasMethod('removePropertyIf',    'removeIf');
+Transformation.aliasMethod('removeByPattern',     'remove');
 
 
 Transformation.aliasMethod('assignProperty',      'set');

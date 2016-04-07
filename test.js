@@ -592,7 +592,7 @@ describe('adapt', function() {
       test.a = 1;
       test.b = 2;
       test.c = 1;
-      var transformation = adapt.createTransformation().removeByPattern(/^[ab]$/);
+      var transformation = adapt.createTransformation().remove(/^[ab]$/);
       var transformed = adapt.transform(test, transformation);
       should.not.exist(transformed.a);
       should.not.exist(transformed.b);
@@ -607,7 +607,7 @@ describe('adapt', function() {
       test.c.a = 1;
       test.c.b = 2;
       test.c.c = 3;
-      var transformation = adapt.createTransformation().removeByPattern(/^[ab]$/, true);
+      var transformation = adapt.createTransformation().remove(/^[ab]$/, true);
       var transformed = adapt.transform(test, transformation);
       should.not.exist(transformed.a);
       should.not.exist(transformed.b);
