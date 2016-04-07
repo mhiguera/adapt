@@ -647,5 +647,12 @@ describe('adapt', function() {
       should.exist(transformed.other_dummy_property.another_one_bites_the_dust);
     })
 
+    it('should rename camel-cased properties of an array-nested object matching a pattern', function() {
+      var test = [{ dummyProperty: 1, otherDummyProperty: [ { anotherOneBitesTheDust: 1 } ] }];
+      var transformation = adapt.createTransformation().camelToSnake(true);
+      var transformed = adapt.transform(test, transformation);
+      should.exist(transformed[0].dummy_property);
+      should.exist(transformed[0].other_dummy_property[0].another_one_bites_the_dust);
+    })
   });
 });

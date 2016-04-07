@@ -373,7 +373,7 @@ Transformation.addMethod('camelToSnake', function(deep) {
       }
       if (!deep) continue;
       var type = typeof(object[key]);
-      if (type == 'string' || type == 'number' || this[key] instanceof Array) continue;
+      if (type == 'string' || type == 'number') continue;
       object[key] = fn.call(object[key], object[key], true);
     }
     toBeRemoved.forEach(function(key) { delete object[key] });
