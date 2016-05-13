@@ -382,7 +382,7 @@ Transformation.addMethod('camelToSnake', function(deep) {
   return fn;
 })
 
-Transformation.addMethod('inspect', function(handler) {
+Transformation.addMethod('audit', function(handler) {
   return function(object) {
     handler = handler || console.log;
     handler(inspect(object, { depth: null, colors: true }));

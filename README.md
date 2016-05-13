@@ -49,6 +49,9 @@ Output:
 
 Changelog
 =========
+* 0.2.22
+  * Rename `inspect` transformation to `audit`
+
 * 0.2.19 - 0.2.21
   * Bugfixes
   
