@@ -49,6 +49,10 @@ Output:
 
 Changelog
 =========
+* 0.2.23
+  * Add `snakeToCamel` transformation
+  * Bugfixes
+  
 * 0.2.22
   * Rename `inspect` transformation to `audit`
 

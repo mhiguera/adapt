@@ -382,6 +382,27 @@ Transformation.addMethod('camelToSnake', function(deep) {
   return fn;
 })
 
+Transformation.addMethod('snakeToCamel', function(deep, capitalize) {
+  var fn = function(object) {
+    var toBeRemoved = [];
+    for (var key in object) {
+      if (key.match(/[a-z_]/)) {
+        var toBe = key.replace(/_([a-z])/g, function(m1,m2) { return m2.toUpperCase() });
+        if (capitalize) toBe = toBe.replace(/^[a-z]/, function(firstLetter) { return firstLetter.toUpperCase() });
+        object[toBe] = object[key];
+        toBeRemoved.push(key);
+      }
+      if (!deep) continue;
+      var type = typeof(object[key]);
+      if (type == 'string' || type == 'number') continue;
+      object[key] = fn.call(object[key], object[key], true);
+    }
+    toBeRemoved.forEach(function(key) { delete object[key] });
+    return object;
+  }
+  return fn;
+})
+
 Transformation.addMethod('audit', function(handler) {
   return function(object) {
     handler = handler || console.log;
@@ -403,11 +424,7 @@ Transformation.aliasMethod('runCommand',          'run');
 Transformation.aliasMethod('removeProperty',      'remove');
 Transformation.aliasMethod('removePropertyIf',    'removeIf');
 Transformation.aliasMethod('removeByPattern',     'remove');
-
-
 Transformation.aliasMethod('assignProperty',      'set');
 Transformation.aliasMethod('assignProperties',    'setProperties');
-
-
 
 module.exports = Transformation;

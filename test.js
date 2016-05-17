@@ -643,7 +643,6 @@ describe('adapt', function() {
       should.not.exist(transformed.OtherDummyProperty);
       should.exist(transformed.dummy_property);
       should.exist(transformed.other_dummy_property);
-      should.exist(transformed.other_dummy_property);
       should.exist(transformed.other_dummy_property.another_one_bites_the_dust);
     })
 
@@ -654,5 +653,57 @@ describe('adapt', function() {
       should.exist(transformed[0].dummy_property);
       should.exist(transformed[0].other_dummy_property[0].another_one_bites_the_dust);
     })
+
+    it('should rename snake-cased properties to snake-cased', function() {
+      var test = {};
+      test.dummy_property = 1;
+      test.other_dummy_property = {};
+      test.other_dummy_property.another_one_bites_the_dust = 2;
+      var transformation = adapt.createTransformation().snakeToCamel();
+      var transformed = adapt.transform(test, transformation);
+      should.not.exist(transformed.dummy_property);
+      should.not.exist(transformed.other_dummy_property);
+      should.exist(transformed.dummyProperty);
+      should.exist(transformed.otherDummyProperty);
+      should.exist(transformed.otherDummyProperty.another_one_bites_the_dust);
+    })
+
+    it('should rename snake-cased properties to snake-cased, even the nested ones', function() {
+      var test = {};
+      test.dummy_property = 1;
+      test.other_dummy_property = {};
+      test.other_dummy_property.another_one_bites_the_dust = 2;
+      var transformation = adapt.createTransformation().snakeToCamel(true);
+      var transformed = adapt.transform(test, transformation);
+      should.not.exist(transformed.dummy_property);
+      should.not.exist(transformed.other_dummy_property);
+      should.exist(transformed.dummyProperty);
+      should.exist(transformed.otherDummyProperty);
+      should.exist(transformed.otherDummyProperty.anotherOneBitesTheDust);
+    })
+
+    it('should rename and capitalize snake-cased properties to snake-cased, even the nested ones', function() {
+      var test = {};
+      test.dummy_property = 1;
+      test.other_dummy_property = {};
+      test.other_dummy_property.another_one_bites_the_dust = 2;
+      var transformation = adapt.createTransformation().snakeToCamel(true, true);
+      var transformed = adapt.transform(test, transformation);
+      should.not.exist(transformed.dummy_property);
+      should.not.exist(transformed.other_dummy_property);
+      should.exist(transformed.DummyProperty);
+      should.exist(transformed.OtherDummyProperty);
+      should.exist(transformed.OtherDummyProperty.AnotherOneBitesTheDust);
+    })
+
+
+    it('should rename snake-cased properties of an array-nested object matching a pattern', function() {
+      var test = [{ dummy_property: 1, other_dummy_property: [ { another_one_bites_the_dust: 1 } ] }];
+      var transformation = adapt.createTransformation().snakeToCamel(true);
+      var transformed = adapt.transform(test, transformation);
+      should.exist(transformed[0].dummyProperty);
+      should.exist(transformed[0].otherDummyProperty[0].anotherOneBitesTheDust);
+    })
+
   });
 });
