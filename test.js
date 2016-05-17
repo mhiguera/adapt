@@ -233,12 +233,24 @@ describe('adapt', function() {
 
     it('should expand an object', function() {
       var test = 'test';
-      var transformation = adapt.createTransformation().expand('text')
+      var transformation = adapt.createTransformation().expand('test');
       var transformed = adapt.transform(test, transformation);
       should.exist(transformed);
-      should.exist(transformed.text);
-      transformed.text.should.equal('test');
+      should.exist(transformed.test);
+      transformed.test.should.equal('test');
     });
+
+    it('should expand an object with exceptions', function() {
+      var test = {};
+      test.a = 1;
+      test.b = 2;
+      var transformation = adapt.createTransformation().expandExcept('test', ['b']);
+      var transformed = adapt.transform(test, transformation);
+      should.exist(transformed.b);
+      should.exist(transformed.test);
+      transformed.test.a.should.equal(1);
+    });
+
 
     it('should extract an object from property', function() {
       var test = { 'text': 'test' }

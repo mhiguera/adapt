@@ -173,6 +173,20 @@ Transformation.addMethod('expand', function(propName) {
   }
 })
 
+Transformation.addMethod('expandExcept', function(propName, exclusion) {
+  return function(object) {
+    expanded = {};
+    var keys = Object.keys(object);
+    keys.filter(function(k) { return !~k.indexOf(exclusion) })
+      .forEach(function(k) { 
+        expanded[k] = object[k];
+        delete object[k];
+      });
+    object[propName] = expanded;
+    return object;
+  }
+})
+
 Transformation.addMethod('transform', function(propName, transformation, newContext) {
   var self = this;
   var transformProperty = function(object, propName) {

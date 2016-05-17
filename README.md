@@ -49,6 +49,9 @@ Output:
 
 Changelog
 =========
+* 0.2.25
+  * Add `expandExcept(propName, exclusionArray)` transformation
+
 * 0.2.24
   * Bugfixes
   
