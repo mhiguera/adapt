@@ -389,6 +389,7 @@ Transformation.addMethod('snakeToCamel', function(deep, capitalize) {
       if (key.match(/[a-z_]/)) {
         var toBe = key.replace(/_([a-z])/g, function(m1,m2) { return m2.toUpperCase() });
         if (capitalize) toBe = toBe.replace(/^[a-z]/, function(firstLetter) { return firstLetter.toUpperCase() });
+        if (key == toBe) continue;
         object[toBe] = object[key];
         toBeRemoved.push(key);
       }

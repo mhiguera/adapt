@@ -353,14 +353,12 @@ describe('adapt', function() {
 
     it('should transform independently', function() {
       var test1 = { propName: 'propValue' }
-      var test2 = test1;
       var transformation = adapt.createTransformation();
       transformation.expand('expanded');
       var transformed1 = adapt.transform(test1, transformation);
       should.exist(transformed1);
       should.exist(transformed1.expanded);
       should.not.exist(transformed1.expanded.expanded);
-      var transformed2 = adapt.transform(test2, transformation);
       should.exist(transformed1);
       should.exist(transformed1.expanded);
       should.not.exist(transformed1.expanded.expanded);
@@ -670,11 +668,13 @@ describe('adapt', function() {
 
     it('should rename snake-cased properties to snake-cased, even the nested ones', function() {
       var test = {};
+      test.gotcha = 1;
       test.dummy_property = 1;
       test.other_dummy_property = {};
       test.other_dummy_property.another_one_bites_the_dust = 2;
       var transformation = adapt.createTransformation().snakeToCamel(true);
       var transformed = adapt.transform(test, transformation);
+      should.exist(transformed.gotcha);
       should.not.exist(transformed.dummy_property);
       should.not.exist(transformed.other_dummy_property);
       should.exist(transformed.dummyProperty);

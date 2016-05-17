@@ -49,6 +49,9 @@ Output:
 
 Changelog
 =========
+* 0.2.24
+  * Bugfixes
+  
 * 0.2.23
   * Add `snakeToCamel` transformation
   * Bugfixes
