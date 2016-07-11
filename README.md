@@ -1,7 +1,7 @@
 Learning by example
 ===================
 
-```
+```javascript
 var adapt = require('adapt');
 var data = {
   father:   'John Doe',
@@ -31,7 +31,7 @@ console.log(adapt.transform(data, family));
 
 Output:
 
-```
+```javascript
 { father: { full_name: 'John Doe', name: 'John', surname: 'Doe' },
   mother: { full_name: 'Jane Doe', name: 'Jane', surname: 'Doe' },
   children: 
