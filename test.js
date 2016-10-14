@@ -333,6 +333,28 @@ describe('adapt', function() {
       should.exist(transformed.group.prop1);
     })
 
+    it('should group property values as an array in another property', function() {
+      var test = { prop1: 'a', prop2: 'b', prop3: 'c' }
+      var transformation = adapt.createTransformation()
+        .listValues(['prop1', 'prop2', 'prop3'], 'list');
+      var transformed = adapt.transform(test, transformation);
+      should.exist(transformed);
+      should.exist(transformed.list);
+      should.not.exist(transformed.prop1);
+      transformed.list[0].should.equal('a');
+    })
+
+    it('should group properties as an array of objects in another property', function() {
+      var test = { prop1: 'a', prop2: 'b', prop3: 'c' }
+      var transformation = adapt.createTransformation()
+        .listProperties(['prop1', 'prop2', 'prop3'], 'list');
+      var transformed = adapt.transform(test, transformation);
+      should.exist(transformed);
+      should.exist(transformed.list);
+      should.not.exist(transformed.prop1);
+      transformed.list[0].should.deep.equal( { prop1: 'a' } );
+    })
+
     it('should numberize a property when asked to', function() {
       var test = { p: '123' }
       var transformation = adapt.createTransformation()
