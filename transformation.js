@@ -112,8 +112,10 @@ Transformation.addMethod('cast', function(propName, cast) {
 
 Transformation.addMethod('rename', function(oldPropName, newPropName) {
   return function(object) {
-    object[newPropName] = object[oldPropName];
-    delete object[oldPropName];
+    if ('undefined' !== typeof object[oldPropName]) {
+      object[newPropName] = object[oldPropName];
+      delete object[oldPropName];
+    }
     return object;
   }
 })

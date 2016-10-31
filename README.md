@@ -49,6 +49,9 @@ Output:
 
 Changelog
 =========
+* 0.2.27
+  * `rename` should do nothing if property name does not exist
+
 * 0.2.25
   * Add `expandExcept(propName, exclusionArray)` transformation
 
