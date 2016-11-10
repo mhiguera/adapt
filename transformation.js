@@ -258,6 +258,32 @@ Transformation.addMethod('group', function(properties, propName) {
   }
 })
 
+Transformation.addMethod('listValues', function(properties, propName) {
+  return function(object) {
+    var list = [];
+    properties.forEach(function(fromName) {
+      list.push(object[fromName]);
+      delete object[fromName];
+    })
+    object[propName] = list;
+    return object;
+  }
+})
+
+Transformation.addMethod('listProperties', function(properties, propName) {
+  return function(object) {
+    var list = [];
+    properties.forEach(function(fromName) {
+      var o = {};
+      o[fromName] = object[fromName]
+      list.push(o);
+      delete object[fromName];
+    })
+    object[propName] = list;
+    return object;
+  }
+})
+
 Transformation.addMethod('mergeCollections', function(properties, propName) {
   return function(object) {
     var arr = [];
