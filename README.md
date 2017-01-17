@@ -49,6 +49,9 @@ Output:
 
 Changelog
 =========
+* 0.2.28
+  * Updates adapt.tap.numberize to include comma as valid decimal separator
+
 * 0.2.27
   * `rename` should do nothing if property name does not exist
 

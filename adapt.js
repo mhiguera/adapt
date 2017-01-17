@@ -46,10 +46,14 @@ module.exports = {
     },
 
     numberize: function(propName) {
-      var regex = /([0-9.]*)/;
-      return function () {
+      var regex = /([0-9.]+([,.][0-9.]+)?)/;
+      return function() {
+        if (!this[propName]) return null;
         var match = regex.exec(this[propName]);
-        if (match) return Number(match[0]);
+        if (match) {
+          if (match[0].indexOf(',') !== -1) match[0] = match[0].replace(',', '.');
+          return Number(match[0]);
+        }
         else return null;
       }
     }
