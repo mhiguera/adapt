@@ -49,6 +49,9 @@ Output:
 
 Changelog
 =========
+* 0.2.29
+  * Adds a default context (`{}`) when not provided
+
 * 0.2.28
   * Updates adapt.tap.numberize to include comma as valid decimal separator
 
