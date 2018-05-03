@@ -49,9 +49,10 @@ Output:
 
 Changelog
 =========
-* 0.2.31
+* 0.2.32
   * Removes default context (allowing to be falsy)
   * Allows a falsy context to be used
+  * Minor bugfixes
 
 * 0.2.29
   * Adds a default context (`{}`) when not provided

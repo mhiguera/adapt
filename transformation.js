@@ -51,7 +51,7 @@ Transformation.prototype.executeCollection  = function(object, context) {
 Transformation.prototype.execute = function(source, context) {
   source = utils.shallowCopy(source);
   if (this.loopback) source = this.loopback.execute(source, context);
-  if (context) this.context = context;
+  if ('undefined' !== typeof context) this.context = context;
   this.stack.forEach(function(t) { source = t(source) });
   return source;
 }
