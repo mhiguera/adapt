@@ -49,7 +49,8 @@ Output:
 
 Changelog
 =========
-* 0.2.30
+* 0.2.31
+  * Removes default context (allowing to be falsy)
   * Allows a falsy context to be used
 
 * 0.2.29

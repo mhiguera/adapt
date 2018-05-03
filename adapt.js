@@ -64,7 +64,7 @@ module.exports = {
   },
 
   transform: function(object, transformation, context) {
-    return object? transformation.execute(object, context || {}) : object;
+    return object? transformation.execute(object, context) : object;
   },
 
   transformCollection: function(object, transformation, context) {
