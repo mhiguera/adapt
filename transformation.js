@@ -191,11 +191,12 @@ Transformation.addMethod('expandExcept', function(propName, exclusion) {
 
 Transformation.addMethod('transform', function(propName, transformation, newContext) {
   var self = this;
+  var hasContext = 'undefined' !== typeof newContext;
   var transformProperty = function(object, propName) {
     var context;
     var property = object[propName];
-    if (newContext && newContext instanceof Function) context = newContext.call(object, self.getContext())
-    else if (newContext) context = newContext;
+    if (hasContext && newContext instanceof Function) context = newContext.call(object, self.getContext())
+    else if (hasContext) context = newContext;
     else context = self.getContext();
     return transformation.execute(property, context);
   }
@@ -209,11 +210,12 @@ Transformation.addMethod('transform', function(propName, transformation, newCont
 
 Transformation.addMethod('transformCollection', function(propName, transformation, newContext) {
   var self = this;
+  var hasContext = 'undefined' !== typeof newContext;
   var transformProperty = function(object, propName) {
     var context;
     var property = object[propName];
-    if (newContext && newContext instanceof Function) context = newContext.call(object, self.getContext())
-    else if (newContext) context = newContext;
+    if (hasContext && newContext instanceof Function) context = newContext.call(object, self.getContext())
+    else if (hasContext) context = newContext;
     else context = self.getContext();
     return transformation.executeCollection(property, context);
   }
@@ -471,3 +473,4 @@ Transformation.aliasMethod('assignProperty',      'set');
 Transformation.aliasMethod('assignProperties',    'setProperties');
 
 module.exports = Transformation;
+
