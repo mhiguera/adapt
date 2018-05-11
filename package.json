@@ -1,6 +1,6 @@
 {
   "name": "adapt",
-  "version": "0.2.32",
+  "version": "0.2.33",
   "description": "Adaption library",
   "author": "Manuel de la Higuera <mhiguera@gmail.com",
   "main": "adapt.js",
@@ -18,8 +18,8 @@
   ],
   "license": "MIT",
   "devDependencies": {
-    "chai": "^1.9.1",
-    "mocha": "^1.20.1"
+    "chai": "^4.1.2",
+    "mocha": "^5.1.1"
   },
   "scripts": {
     "test": "mocha test.js"

@@ -49,6 +49,10 @@ Output:
 
 Changelog
 =========
+* 0.2.33
+  * Updates mocha and chai to latest versions
+
+
 * 0.2.32
   * Removes default context (allowing to be falsy)
   * Allows a falsy context to be used
