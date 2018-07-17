@@ -231,6 +231,17 @@ describe('adapt', function() {
       transformed.list.should.have.length(32);
     });
 
+    it('should apply an external function', function() {
+      var test = [1,2,3,4,5,6,7,8];
+      var fn = function(o) { return o.filter(function(e) { return !(e%2) })}
+      var transformation = adapt.createTransformation().apply(fn);
+      var transformed = adapt.transform(test, transformation);
+      should.exist(transformed);
+      transformed[0].should.equal(2);
+      transformed[1].should.equal(4);
+      transformed.should.have.length(4);
+    })
+
     it('should expand an object', function() {
       var test = 'test';
       var transformation = adapt.createTransformation().expand('test');

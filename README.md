@@ -49,6 +49,9 @@ Output:
 
 Changelog
 =========
+* 0.2.34
+  * Adds `apply` transformation
+
 * 0.2.33
   * Updates mocha and chai to latest versions
 

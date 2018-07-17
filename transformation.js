@@ -161,6 +161,13 @@ Transformation.addMethod('run', function(command) {
   }
 })
 
+Transformation.addMethod('apply', function(fn) {
+  var args = [].slice.call(arguments, 1);
+  return function(object) {
+    return fn.call(null, object, args);
+  }
+})
+
 Transformation.addMethod('extract', function(propName) {
   return function(object) {
     return object[propName];
