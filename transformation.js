@@ -462,29 +462,34 @@ Transformation.addMethod('audit', function(handler) {
     return object;
   }
 })
+
 Transformation.addMethod('trashCollector',function(arr){
-  var trashCollector = function(name) {
-    delete arr[name]
-  }
-  for(c in arr){
-    if(arr[c] instanceof Object){
-      if(arr.constructor === Array){
-        if(!arr[c].length){
-          trashCollector(c)
+  var fn = function(object){
+    var trashCollector = function(name) {
+      delete object[name]
+    }
+    for(c in object){
+      if(object[c] instanceof Object){
+        if(object.constructor === Array){
+          if(!object[c].length){
+            trashCollector(c)
+          }
+        }
+        else{
+          if(object[c] === null || !Object.keys(object[c]).length){
+            trashCollector(c)
+          }
         }
       }
-      else{
-        if(arr[c] === null || !Object.keys(arr[c]).length){
-          trashCollector(c)
-        }
+      else if(!object[c]){
+        trashCollector(c)
       }
     }
-    else if(!arr[c]){
-      trashCollector(c)
-    }
+    return object
   }
-  return arr 
+  return fn
 })
+
 Transformation.aliasMethod('setProperty',         'set');
 Transformation.aliasMethod('renameProperty',      'rename');
 Transformation.aliasMethod('cloneProperty',       'clone');
@@ -500,6 +505,6 @@ Transformation.aliasMethod('removePropertyIf',    'removeIf');
 Transformation.aliasMethod('removeByPattern',     'remove');
 Transformation.aliasMethod('assignProperty',      'set');
 Transformation.aliasMethod('assignProperties',    'setProperties');
-
+//Transformation.aliasMethod('trashCollectorProperty', 'trashCollector')
 module.exports = Transformation;
 
