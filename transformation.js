@@ -483,7 +483,7 @@ Transformation.addMethod('trashCollector',function(arr){
       trashCollector(c)
     }
   }
-  return arr
+  return arr 
 })
 Transformation.aliasMethod('setProperty',         'set');
 Transformation.aliasMethod('renameProperty',      'rename');

@@ -1,4 +1,4 @@
-Learning by example
+Learning by example 
 ===================
 
 ```javascript
