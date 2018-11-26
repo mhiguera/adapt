@@ -462,7 +462,29 @@ Transformation.addMethod('audit', function(handler) {
     return object;
   }
 })
-
+Transformation.addMethod('trashCollector',function(arr){
+  var trashCollector = function(name) {
+    delete arr[name]
+  }
+  for(c in arr){
+    if(arr[c] instanceof Object){
+      if(arr.constructor === Array){
+        if(!arr[c].length){
+          trashCollector(c)
+        }
+      }
+      else{
+        if(arr[c] === null || !Object.keys(arr[c]).length){
+          trashCollector(c)
+        }
+      }
+    }
+    else if(!arr[c]){
+      trashCollector(c)
+    }
+  }
+  return arr
+})
 Transformation.aliasMethod('setProperty',         'set');
 Transformation.aliasMethod('renameProperty',      'rename');
 Transformation.aliasMethod('cloneProperty',       'clone');

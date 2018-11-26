@@ -49,6 +49,9 @@ Output:
 
 Changelog
 =========
+* 0.2.35 
+  * Add trash collector for delete all falsy and empty elements.
+
 * 0.2.34
   * Adds `apply` transformation
 
