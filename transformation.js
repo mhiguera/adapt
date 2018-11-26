@@ -470,7 +470,7 @@ Transformation.addMethod('trashCollector',function(arr){
     }
     for(c in object){
       if(object[c] instanceof Object){
-        if(object.constructor === Array){
+        if(object[c].constructor === Array){
           if(!object[c].length){
             trashCollector(c)
           }
