@@ -135,7 +135,7 @@ describe('adapt', function() {
       should.exist(transformed.prop2);
       transformed.prop2.should.equal(1);
     });
-    
+
     it('should clone a property (non-primitive)', function() {
       var test = { prop1: [1,2,3] }
       var transformation = adapt.createTransformation();
@@ -160,6 +160,26 @@ describe('adapt', function() {
       should.exist(transformed);
       should.exist(transformed.sum);
       transformed.sum.should.equal(6);
+    });
+
+    it('should compute a property with deferred value', function() {
+      var test = { prop1: 1, prop2: 2, prop3: 3 }
+      var transformation = adapt.createTransformation();
+      transformation.set('sum', function() {
+        var sum = 0;
+        for (var prop in this) sum += this[prop];
+        return new Promise((resolve, reject) => {
+          setTimeout(() => {
+            resolve(sum);
+          }, 100)
+        });
+      });
+      var transformedDeferred = adapt.transform(test, transformation);
+      transformedDeferred.then((transformed) => {
+        should.exist(transformed);
+        should.exist(transformed.sum);
+        transformed.sum.should.equal(6);
+      })
     });
 
     it('should not assign a computed property if no return is found and property existed before', function() {
@@ -597,7 +617,6 @@ describe('adapt', function() {
       should.exist(transformed.c.c3);
     })
 
-    
     it('should remove all empty strings', function() {
       var test = {};
       test.a = '';

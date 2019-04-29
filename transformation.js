@@ -85,7 +85,7 @@ Transformation.addMethod('remove', function(propName, deep) {
     }
     return object;
   }
-  
+
   return function(object) {
     if (propName instanceof Array) propName.forEach(function(p) { delete object[p] });
     else if (propName instanceof RegExp) removeByPattern(object);
@@ -126,8 +126,15 @@ Transformation.addMethod('set', function(propName, value) {
     var v = value;
     if (value instanceof Transformation)  v = value.execute(object, self.getContext());
     else if ('function' === typeof value) v = value.call(object, self.getContext());
-    object[propName] = ('undefined' !== typeof v)? v : object[propName];
-    return object;
+    if (v && v.constructor.name === 'Promise') {
+      return v.then((deferredValue) => {
+        object[propName] = ('undefined' !== typeof v)? deferredValue : object[propName];
+        return object;
+      });
+    } else {
+      object[propName] = ('undefined' !== typeof v)? v : object[propName];
+      return object;
+    }
   }
 })
 
@@ -187,7 +194,7 @@ Transformation.addMethod('expandExcept', function(propName, exclusion) {
     expanded = {};
     var keys = Object.keys(object);
     keys.filter(function(k) { return !~k.indexOf(exclusion) })
-      .forEach(function(k) { 
+      .forEach(function(k) {
         expanded[k] = object[k];
         delete object[k];
       });
@@ -396,8 +403,8 @@ Transformation.addMethod('removeEmptyStrings', function(deep) {
 Transformation.addMethod('removeEmptyArrays', function(deep) {
   var fn = function(object) {
     for (var i in object) {
-      if ('object' === typeof(object[i]) && 
-          object[i] instanceof Array && 
+      if ('object' === typeof(object[i]) &&
+          object[i] instanceof Array &&
           object[i].length === 0) {
         delete object[i];
         continue;
