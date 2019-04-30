@@ -56,6 +56,16 @@ Transformation.prototype.execute = function(source, context) {
   return source;
 }
 
+Transformation.prototype.executeAsync = function(source, context) {
+  source = utils.shallowCopy(source);
+  if (this.loopback) source = this.loopback.execute(source, context);
+  if ('undefined' !== typeof context) this.context = context;
+  return this.stack.reduce(
+    (before, current) => before.then(source => current(source)),
+    Promise.resolve(source)
+  );
+}
+
 Transformation.addMethod('setContext', function(context) {
   var self = this;
   return function(object) {

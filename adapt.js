@@ -67,6 +67,10 @@ module.exports = {
     return object? transformation.execute(object, context) : object;
   },
 
+  transformAsync: function(object, transformation, context) {
+    return object? transformation.executeAsync(object, context) : object;
+  },
+
   transformCollection: function(object, transformation, context) {
     return transformation.executeCollection(object, context);
   },
