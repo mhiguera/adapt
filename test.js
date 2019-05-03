@@ -135,7 +135,7 @@ describe('adapt', function() {
       should.exist(transformed.prop2);
       transformed.prop2.should.equal(1);
     });
-    
+
     it('should clone a property (non-primitive)', function() {
       var test = { prop1: [1,2,3] }
       var transformation = adapt.createTransformation();
@@ -160,6 +160,51 @@ describe('adapt', function() {
       should.exist(transformed);
       should.exist(transformed.sum);
       transformed.sum.should.equal(6);
+    });
+
+    it('should compute a property with deferred and synchronous values in a chain', function() {
+      var test = { prop1: 1, prop2: 2, prop3: 3 }
+      var transformation = adapt.createTransformation();
+      transformation
+        .set('sum1', 2)
+        .set('sum2', function(ctx) {
+          var sum = 0;
+          for (var prop in this) sum += this[prop];
+          return new Promise((resolve, reject) => {
+            setTimeout(() => {
+              resolve(sum);
+            }, 100)
+          });
+        })
+        .set('sum3', function(ctx) {
+          return 4;
+        })
+        .set('sum4', 5);
+      var transformedDeferred = adapt.transformAsync(test, transformation);
+      return transformedDeferred.then((transformed) => {
+        should.exist(transformed);
+        should.exist(transformed.sum1);
+        should.exist(transformed.sum2);
+        should.exist(transformed.sum3);
+        should.exist(transformed.sum4);
+        transformed.sum2.should.equal(8);
+      });
+    });
+
+    it('should compute a property with synchronous values in a chain', function() {
+      var test = { prop1: 1, prop2: 2, prop3: 3 }
+      var transformation = adapt.createTransformation();
+      transformation
+        .set('sum1', 2)
+        .set('sum2', function(ctx) {
+          return 4;
+        })
+        .set('sum3', 5);
+      var transformed = adapt.transform(test, transformation);
+      should.exist(transformed);
+      should.exist(transformed.sum1);
+      should.exist(transformed.sum2);
+      should.exist(transformed.sum3);
     });
 
     it('should not assign a computed property if no return is found and property existed before', function() {
@@ -597,7 +642,6 @@ describe('adapt', function() {
       should.exist(transformed.c.c3);
     })
 
-    
     it('should remove all empty strings', function() {
       var test = {};
       test.a = '';
