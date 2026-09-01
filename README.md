@@ -1,3 +1,9 @@
+> **This package is no longer maintained.**
+> The npm name `adapt` has been handed over to Adapt (https://adapt.com) and now
+> publishes their CLI. Versions 0.2.35 and below on npm are this library and remain
+> installable, but will not receive updates. The source here stays under MIT if you
+> want to fork it.
+
 Learning by example
 ===================
 
